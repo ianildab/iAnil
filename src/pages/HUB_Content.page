@@ -1,0 +1,165 @@
+<apex:page standardcontroller="HUB_Contents__c" id="Page" extensions="HUB_ContentController">
+<apex:includeScript value="/support/console/22.0/integration.js"/>
+<script type="text/javascript">
+        function testSetTabTitle() {
+            //Set the current tab's title
+            sforce.console.setTabTitle('Content:{!JSENCODE(HUB_Contents__c.Title__c)}');
+        }
+        var pageLoad = window.onload;
+          window.onload = function() {
+                if (pageLoad) {
+                        pageLoad();
+                }
+                  testSetTabTitle();
+          }
+    </script>
+<script>
+    
+    function showHideRepeatSettings(){
+        var repeat = document.getElementById("Page:myForm:PageBlock:pageblockRepeat:repeatItem:repeat").checked;
+        if(repeat){
+            document.getElementById("repeatSection").style.display = "block";
+        }else{
+            document.getElementById("repeatSection").style.display = "none";
+        }
+    }
+    
+    function hideAllRecTypes(){
+        document.getElementById("dailyOptions").style.display = "none";
+        document.getElementById("weeklyOptions").style.display = "none";
+        document.getElementById("monthlyOptions").style.display = "none";
+        document.getElementById("yearlyOptions").style.display = "none";
+    }
+
+    function changeRecurrenceType(){
+        hideAllRecTypes();
+        
+        var recType = document.getElementById("Page:myForm:PageBlock:pageblockRepeat:frequencyItem:recType").value;
+        if(recType == 'Daily'){
+            document.getElementById("dailyOptions").style.display = "block";
+        }else if(recType == 'Weekly'){
+            document.getElementById("weeklyOptions").style.display = "block";
+        }else if(recType == 'Monthly'){
+            document.getElementById("monthlyOptions").style.display = "block";
+        }else if(recType == 'Yearly'){
+            document.getElementById("yearlyOptions").style.display = "block";
+        }
+    }
+    
+</script>
+
+<apex:sectionHeader title="Content edit" subtitle="New Content"/>
+
+    <apex:form id="myForm">
+    <apex:pageMessages />
+        <apex:PageBlock id="PageBlock" mode="edit">
+            <apex:pageBlockSection id="defaultId" title="Information" columns="1">
+                <apex:inputField id="titleID" value="{!objContent.Title__c}"  required="true" style="width:750px;"/>
+                <apex:inputField id="descriptionId" value="{!objContent.Description__c}" style="width:750px;"  />
+                <apex:inputField value="{!objContent.URL__c}"  style="width:750px;"/>
+                
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection columns="2">
+                <apex:inputField value="{!objContent.Source__c}"  required="true"/>
+                <apex:inputField value="{!objContent.contentType__c}"  required="true"/>
+                <apex:inputField value="{!objContent.Date__c}"  />
+                <apex:inputField value="{!objContent.End_Date__c}"  />
+                
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Repeat Settings" columns="1" id="pageblockRepeat">
+                <apex:pageBlockSectionItem id="repeatItem">
+                    Repeat <apex:outputPanel ><apex:inputField value="{!objContent.Repeat__c}" id="repeat" onclick="showHideRepeatSettings()" /></apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem id="frequencyItem">
+                    Frequency <apex:outputPanel ><div id="repeatSection" style="display:{!IF(objContent.Repeat__c, '','none')}">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                            <apex:selectList id="recType" value="{!objContent.Frequency__c}" size="1" onchange="changeRecurrenceType()">
+                                                    <apex:selectOptions value="{!Frequency}"/>
+                                            </apex:selectList>
+                                            </td>
+                                            <td>
+                                                <div id="dailyOptions" style="display:{!IF(frequencyVisibility = 'Daily','','none')};">
+                                                    <apex:selectRadio value="{!objContent.Daily_Options__c}" layout="pageDirection">
+                                                        <apex:selectoptions value="{!DailyOptions}"></apex:selectoptions>
+                                                        
+                                                    </apex:selectRadio><br />
+                                                    <apex:inputField value="{!objContent.dailyEveryNDays__c}" style="width:30px; margin-left:80px;margin-top:-43px;position: absolute;" /> 
+                                                    <apex:outputLabel value="day(s)"  style="margin-top:-43px; position: absolute;margin-left:120px"/>
+                                                </div>
+                                                
+                                                
+                                                <div id="weeklyOptions" style="display:{!IF(frequencyVisibility = 'Weekly','','none')};">
+                                                    Recurs every &nbsp;<apex:inputField style="width:30px;" value="{!objContent.weeklyEveryNWeeks__c}" /> week(s) on<br/>
+                                                   <apex:selectCheckboxes value="{!weeks}">
+                                                            <apex:selectoptions value="{!Repeatonweeks}"></apex:selectoptions> 
+                                                   </apex:selectCheckboxes>
+                                                </div>
+                                                <div id="monthlyOptions" style="display:{!IF(frequencyVisibility = 'Monthly','','none')};">
+                                                    
+                                                     <apex:selectRadio value="{!objContent.Monthly_Options__c}" layout="pageDirection">
+                                                        <apex:selectoptions value="{!MonthlyOptions}"></apex:selectoptions>
+                                                    </apex:selectRadio>
+                                                    
+                                                     <apex:selectList value="{!objContent.monthlyDays__c}" size="1" style="margin-left:85px;margin-top:-45px;position: absolute; " id="monthlydays">
+                                                                 <apex:selectOptions value="{!MonthlyDays}"/>
+                                                         </apex:selectList>
+                                                    <apex:outputLabel value="of every" style="margin-top:-45px;margin-left:135px; position: absolute;" id="labl1" />                
+                                                    <apex:inputField value="{!objContent.monthlyEveryNMonths__c}" style="width:30px;margin-top:-45px;position: absolute;margin-left:185px" /> 
+                                                    <apex:outputLabel value="month(s)"  style="margin-top:-45px; position: absolute;margin-left:225px"/>
+                                                    <br/>
+                                                    <apex:selectList value="{!objContent.monthlyNthDay__c}" size="1" style="margin-left:85px;margin-top:-35px;position: absolute;">
+                                                                 <apex:selectOptions value="{!MonthlyNthDay}"/>
+                                                         </apex:selectList>
+                                                    
+                                                    <apex:selectList value="{!objContent.monthlyWeeks__c}" size="1" style="margin-top:-35px;position: absolute;margin-left:145px">
+                                                                 <apex:selectOptions value="{!MonthlyWeeks}"/>
+                                                         </apex:selectList>
+                                                    <apex:outputLabel value="of every" style="margin-top:-35px; position: absolute;margin-left:245px"/>     
+                                                    <apex:inputField value="{!objContent.monthlyEveryNMonths2__c}" style="margin-top:-35px; position: absolute;margin-left:295px;width:30px;" />
+                                                    <apex:outputLabel value=" month(s)" style="margin-top:-35px; position: absolute;margin-left:335px"/>     
+                                                </div>
+                                                <div id="yearlyOptions" style="display:{!IF(frequencyVisibility = 'Yearly','','none')};">
+                                                    <apex:selectRadio value="{!objContent.yearlyOptions__c}" layout="pageDirection">
+                                                        <apex:selectoptions value="{!YearlyOptions}"></apex:selectoptions>
+                                                    </apex:selectRadio>
+                                                    <apex:selectList value="{!objContent.yearlyMonth__c}" size="1" style="margin-left:90px;margin-top:-90px;">
+                                                                 <apex:selectOptions value="{!YearlyMonth}"/>
+                                                         </apex:selectList>
+                                                    <apex:selectList value="{!objContent.yearlyDay__c}" size="1" style="margin-top:-90px;">
+                                                                 <apex:selectOptions value="{!YearlyDay}"/>
+                                                         </apex:selectList>
+                                                        <br/>
+                                                     <apex:selectList value="{!objContent.yearlyNthDay__c}" size="1" style="margin-left:90px;margin-top:-35px;">
+                                                                 <apex:selectOptions value="{!YearlyNthDay}"/>
+                                                         </apex:selectList>
+                                                         <apex:selectList value="{!objContent.yearlyNthDay2__c}" size="1" style="margin-top:-35px;">
+                                                                 <apex:selectOptions value="{!YearlyNthDay2}"/>
+                                                         </apex:selectList>
+                                                    <apex:outputLabel value="of" style="margin-top:-30px; position: absolute;"/> 
+                                                    <apex:selectList value="{!objContent.yearlyMonth2__c}" size="1" style="margin-top:-35px;margin-left:15px" >
+                                                                 <apex:selectOptions value="{!YearlyMonth2}"/>
+                                                         </apex:selectList>
+                                                </div>
+                                                <div>
+                                                 Start Date &nbsp; &nbsp; <apex:inputField value="{!objContent.repeatStartDate__c}" label="Start Date"/>
+                                                 End Date &nbsp; &nbsp; <apex:inputField value="{!objContent.repeatEndDate__c}" label="Start Date"/>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                              </div></apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockButtons location="both">
+               <apex:commandButton value="Save"  action="{!SaveMethod}"/>
+               <apex:commandButton value="Cancel" action="{!cancel}"/>
+            </apex:pageBlockButtons>
+       </apex:PageBlock>
+</apex:form>
+
+</apex:page>

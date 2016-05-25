@@ -1,0 +1,68 @@
+<apex:component access="global" language="{!lang}">
+<apex:attribute name="obj" description="Current case." type="Case" />
+<apex:attribute name="lang" description="Language" type="String" />
+<apex:attribute name="type" description="Letter type" type="String" />
+<body>
+  <table width="600" height="50">
+  <tr><td width="33%" rowspan="4">
+  <apex:image id="logo" title="The Coca-Cola Company" value="{!$Setup.General_Settings__c.Host__c}/servlet/servlet.ImageServer?id=01520000002HSUR&oid={!$Organization.Id}"/>
+  </td></tr>
+  <tr><td width="37%" rowspan="4">
+  09 69 39 29 00*<br/>
+  <apex:outputLink value="http://www.coca-cola-france.fr/">www.coca-cola-france.fr</apex:outputLink><br/>
+  <apex:outputLink value="https://m.dickssportinggoods.com/?p=aHR0cHM6Ly90d2l0dGVyLmNvbS9jb2NhY29sYWZyL3N0YXR1cy80NDkxNjQzMDU1MjM4MzA3ODQ%3D">@cocacolafr</apex:outputLink><br/>
+  <p><font size="2" color="grey"><b>*Appel non surtaxé</b></font></p>
+  </td></tr>
+  <tr><td width="30%" rowspan="4">
+  Réf client:<font color="red"><b> {!obj.CaseNumber}</b></font>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  </td></tr>
+  </table>
+  <table width="600" height="50">
+  <tr><td width="70%" rowspan="4">
+  <p>Paris, {!day(today())}.{!month(today())}.{!year(today())}</p>
+  </td></tr>
+  <tr><td width="30%" rowspan="4">
+  <p>{!obj.Contact.Name}</p>
+  <p>{!obj.Account.Shipping_Streetname1__c}<br/>
+  {!obj.Account.Shipping_Municipality__c}<br/>
+  {!obj.Account.shipping_administrativearea__c}<br/>
+  {!obj.Account.shipping_postalCode__c}<br/>
+  {!obj.Account.Shipping_Country__c}</p>
+  </td></tr>
+  </table>
+  <p>{!IF (obj.Contact.Gender_Text__c == 'male', 'Cher', IF (obj.Contact.Gender_Text__c == 'female', 'Chère', IF (obj.Contact.Gender_Text__c == 'unknown','Cher/Chère' , 'Cher/Chère' )))}
+  {!obj.Contact.GreetingName__c},</p> 
+  <p>Votre demande relative  à l’apparition de moisissures dans l’une de nos bouteilles de {!obj.Beverage__r.Brand__c} a retenu toute notre attention et nous tenons à vous dire combien nous sommes désolés des faits relatés.</p> 
+  <p>Nous vous remercions vivement de nous en avoir informés.</p>
+  <p>En effet, la qualité de nos produits et de leurs conditionnements revêt pour nous une importance primordiale, et des procédures extrêmement rigoureuses tant internes dans les sites de production qu’externes sont mises en place afin de contrôler et optimiser cette qualité.</p>
+  <p>D'après ce que vous nous décrivez, et bien que n'ayant pu examiner la bouteille en verre concernée, nous pouvons penser qu'une légère fuite s'est produite au niveau de la capsule, entraînant une introduction d'air dans le conditionnement, ce qui a produit le phénomène décrit.</p>
+  <p>Nous vous serions reconnaissants de bien vouloir nous retourner la bouteille concernée en utilisant l’étiquette autocollante jointe à ce courrier. Cette étiquette vous permettra d’envoyer gratuitement votre colis. Afin que la Poste puisse scanner votre colis, nous vous invitons à coller cette étiquette sur une surface plane.</p>
+  <p>Dans l’attente de ce retour et résolu à toujours satisfaire nos consommateurs, nous transmettons immédiatement vos remarques à notre Département Qualité.</p>
+  <p>Nous vous prions de bien vouloir trouver les bons de réduction ci-joints en reconnaissance de votre fidélité à l'égard de nos produits et d’agréer, {!obj.Contact.GreetingName__c}, l'expression de nos salutations distinguées.</p>
+  <p>Cordialement,</p>
+  <br/>
+  <apex:outputText value="{!$User.FirstName} {!$User.LastName}" style="font-weight:bold"/><br/>
+  <apex:outputText style="font-weight:bold" value="Votre conseillère"></apex:outputText><font color="red"><b> Coca-Cola Contact</b></font><br/>
+  <br/>
+  <br/>
+  <br/>
+  Nombre de bon(s) de réduction de 2€ joint(s): <font color="red"><b>{!obj.No_2Euro_vouchers__c}</b></font><br/>
+  Nombre d'étiquette affranchie retour produit: <font color="red"><b>{!obj.No_of_Packs__c}</b></font><br/>
+  <table width = "600">
+      <tr><td><p><apex:image id="footer" title="The Coca-Cola Company" value="{!$Setup.General_Settings__c.Host__c}/servlet/servlet.ImageServer?id=015g00000003ESP&oid={!$Organization.Id}"/></p></td></tr>
+  </table>
+  <table>
+  <tr><td rowspan="4">
+  <apex:image id="recycling" title="The Coca-Cola Company" value="{!$Setup.General_Settings__c.Host__c}/servlet/servlet.ImageServer?id=01520000002HSUS&oid={!$Organization.Id}"/>
+  </td></tr>
+  <tr><td>
+  <apex:outputText style="font-style:italic" value="Conformément à la loi informatique et libertés, vous disposez d'un droit d'accès de modification et de radiation des informations nominatives vous concernant en écrivant à l'adresse suivante : Coca-Cola Services France - Relations Consommateurs 27 rue Camille Desmoulins, TSA 55555, 92784 Issy-les-Moulineaux Cedex 9."></apex:outputText>
+  </td></tr>
+  </table>
+</body>
+</apex:component>

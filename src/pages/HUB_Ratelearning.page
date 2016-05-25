@@ -1,0 +1,32 @@
+<apex:page standardController="HUB_Best_Practices__c" extensions="HUB_RatingController">
+    <style>
+    .text{
+        font-size:11px;
+        font-weight: bold;
+        vertical-align: text-top;
+    }
+    </style>
+    <apex:form id="frmId" >
+        
+        <div style="width:100%; background:#F2EDF0; height:17px; padding:2px; border-radius: 5px; border:1px solid red;">
+        <div style="padding-left:10px;">
+        <span class="text" >Rate This Learning : </span>
+        <apex:selectList value="{!chatterOpt}" multiselect="false" size="1" style="height:16px;">
+            <apex:selectOptions value="{!ChatterOptions}"/>
+            <apex:actionSupport event="onchange" action="{!saveRating}" reRender="outpanel" status="rateStatus"/>
+        </apex:selectList> &nbsp;   
+        <apex:outputPanel id="outpanel">
+            <span class="text">(Average Rating: {!averageRating}) </span>
+        </apex:outputPanel>
+             <apex:actionStatus id="rateStatus">
+                            <apex:facet name="start">
+                                <img src="/img/loading.gif" title="Please Wait..." style="height:14px;width:14px;" />
+                            </apex:facet>
+                        </apex:actionStatus>
+        </div>
+        </div>
+        <div style="width:100%; background:#fff; height:20px;" id="blankSpaceDiv">
+                &nbsp;
+        </div>
+    </apex:form>
+</apex:page>

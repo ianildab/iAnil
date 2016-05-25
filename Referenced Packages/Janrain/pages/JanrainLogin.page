@@ -1,0 +1,59 @@
+<apex:page id="loginPage" showHeader="false" title="{!$Label.site.site_login}" standardController="Janrain__Engage_Settings__c" recordSetVar="settings">
+  <apex:composition template="{!$Site.Template}">
+    <apex:define name="body">  
+      <center>
+        <apex:panelGrid bgcolor="white" columns="1"> 
+          <br/>
+          <br/>
+          <apex:panelGrid width="500" cellpadding="0" cellspacing="0" bgcolor="white" columns="1" styleClass="topPanelContainer"> 
+            <br/>
+            <apex:outputPanel layout="block" styleClass="topPanel">
+              <apex:panelGrid width="500" cellpadding="0" cellspacing="0" bgcolor="white" columns="1">
+                <apex:panelGroup >
+                  <div id="janrainEngageEmbed"></div>
+                </apex:panelGroup>
+              </apex:panelGrid> 
+             </apex:outputPanel>
+            <c:SitePoweredBy />
+          </apex:panelGrid> 
+       </apex:panelGrid>
+      </center>
+      <br/>
+    </apex:define>
+  </apex:composition>
+  <apex:repeat value="{!settings}" var="setting">
+  <script type="text/javascript">
+    var rpxName = "{!JSENCODE(setting.Janrain__App_Name__c)}";
+    var rpxCallback = "{!JSENCODE(setting.Janrain__Callback__c)}";
+  </script>
+  </apex:repeat>
+<script type="text/javascript">
+(function() {
+    if (typeof window.janrain !== 'object') window.janrain = {};
+    if (typeof window.janrain.settings !== 'object') window.janrain.settings = {};
+    
+    /* _______________ can edit below this line _______________ */
+
+    janrain.settings.tokenUrl = rpxCallback;
+    janrain.settings.type = 'embed';
+
+    /* _______________ can edit above this line _______________ */
+
+    function isReady() { janrain.ready = true; };
+    if (document.addEventListener) {
+      document.addEventListener("DOMContentLoaded", isReady, false);
+    } else {
+      window.attachEvent('onload', isReady);
+    }
+
+    var e = document.createElement('script');
+    e.type = 'text/javascript';
+    e.id = 'janrainAuthWidget';
+
+    e.src = 'https://rpxnow.com/js/lib/' + rpxName + '/engage.js';
+
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(e, s);
+})();
+</script>
+</apex:page>

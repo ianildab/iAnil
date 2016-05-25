@@ -1,0 +1,139 @@
+<apex:page id="editPage" tabStyle="Action_Plan_Item__c" standardController="Action_Plan_Item__c" extensions="APTaskConditionCreationController">
+    <apex:form id="Form">
+        <apex:inputHidden value="{!hidden}" id="theHiddenInput" />
+        
+        <apex:pageBlock id="editBlock" title="Action Plan Item Edit" mode="edit">
+             
+            <apex:pageBlockButtons id="buttons" >
+                <apex:commandButton id="save" action="{!saveTaskItems}" value="Save"/>
+                <apex:commandButton id="cancel" action="{!cancel}" value="Cancel" immediate="true"/>
+            </apex:pageBlockButtons>
+            
+            <!--General Information Section -->
+            <apex:pageBlockSection id="taskSection" title="General Information" columns="2">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Action_Plan_Item__c.fields.Name.label}"/>
+                    <apex:inputField required="true" id="name" value="{!actionPlanItem.Name}" /> 
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem id="modeField">
+               
+                   <apex:outputLabel value="{!$ObjectType.Action_Plan_Item__c.fields.Mode__c.label}"/>
+                      <apex:actionRegion >
+                      <apex:inputField required="true" id="mode" value="{!actionPlanItem.Mode__c}"   />
+                    <apex:actionSupport event="onchange" reRender="editPage:Form:editBlock:op" /> 
+                     </apex:actionRegion>     
+                </apex:pageBlockSectionItem>
+          <!--      
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Action_Plan_Item__c.fields.Item_Unique_Name__c.label}"/>
+                    <apex:outputField id="itemUniqueName" value="{!actionPlanItem.Item_Unique_Name__c}" />
+                </apex:pageBlockSectionItem>
+          -->      
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Action_Plan_Item__c.fields.Type__c.label}"/>
+                    <apex:inputField id="type" value="{!actionPlanItem.Type__c}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Action_Plan_Item__c.fields.Task_Number__c.label}"/>
+                    <apex:outputField id="taskNumber" value="{!actionPlanItem.Task_Number__c}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Action_Plan_Item__c.fields.Active__c.label}"/>
+                    <apex:inputField id="active" value="{!actionPlanItem.Active__c}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Action_Plan_Item__c.fields.International_Name__c.label}"/>
+                    <apex:inputField id="internationalName" value="{!actionPlanItem.International_Name__c}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Action_Plan_Item__c.fields.Send_Notification_Email__c.label}"/>
+                    <apex:inputField id="sendNotificationEmail" value="{!actionPlanItem.Send_Notification_Email__c}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Action_Plan_Item__c.fields.International_description__c.label}"/>
+                    <apex:inputField id="internationalDescription" value="{!actionPlanItem.International_description__c}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Action_Plan_Item__c.fields.Action_Plan__c.label}"/>
+                    <apex:inputField id="actionPlan" value="{!actionPlanItem.Action_Plan__c}" />
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>
+                
+                <!--Task Information Section -->
+            <apex:pageBlockSection id="taskInfo" title="Task Information" columns="1">
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Action_Plan_Item__c.fields.Assignee__c.label}"/>
+                    <apex:inputField required="true" id="assignedTo" value="{!actionPlanItem.Assignee__c}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Action_Plan_Item__c.fields.ActivityDate__c.label}"/>
+                    <apex:inputField id="activityDate" value="{!actionPlanItem.ActivityDate__c}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Action_Plan_Item__c.fields.Priority__c.label}"/>
+                    <apex:inputField required="true" id="priority" value="{!actionPlanItem.Priority__c}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Action_Plan_Item__c.fields.Description__c.label}"/>
+                    <apex:inputField id="description" value="{!actionPlanItem.Description__c}" style="width : 250px; height : 40px'"/>
+                </apex:pageBlockSectionItem>
+
+            </apex:pageBlockSection>
+        
+        <script>
+            function evaluateMode(){
+            alert('aaa');
+                var mode=document.getElementById('editPage:Form:editBlock:taskSection:modeField:mode').value;
+              alert('BBB'+mode);  
+              document.getElementById('editPage:Form:theHiddenInput').value=mode;
+              alert(document.getElementById('editPage:Form:theHiddenInput').value);   
+             
+            }
+        </script>
+        
+        <apex:pageMessages ></apex:pageMessages>
+            <!--Task Condition Section -->
+             <apex:pageBlockSection id="taskCondition" title="Task Condition" columns="1" >
+                <apex:pageBlockTable id="taskConditionTable" value="{!wrapperList}" var="page"  width="100%" > 
+                    <apex:column headerValue="Action">
+                        <apex:commandLink id="removeTaskCondition" action="{!removingRow}" immediate="true" reRender="taskConditionTable" >
+                            <apex:image value="{!$Resource.Deletelogo}" height="15" width="15"/>
+                            <apex:param name="index" value="{!page.counterWrap}"/>  
+                        </apex:commandLink>
+                    </apex:column>
+                    
+                     <apex:column headerValue="{!$ObjectType.AP_Task_Condition__c.fields.Field_Name__c.label}">
+                        <apex:inputField id="fieldName" value="{!page.ATC.Field_value__c}"/>
+                    </apex:column>
+                    
+                    <apex:column headerValue="{!$ObjectType.AP_Task_Condition__c.fields.Operator__c.label}">
+                        <apex:inputField id="operator" value="{!page.ATC.Operator__c}" />
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.AP_Task_Condition__c.fields.Values__c.label}">
+                        <apex:inputField id="values" value="{!page.ATC.Values__c}" style="width:550px;"/>
+                    </apex:column>
+                <!--    <apex:column headerValue="{!$ObjectType.AP_Task_Condition__c.fields.Condition_Unique_Name__c.label}">
+                        <apex:inputField id="conditionUniqueName" value="{!page.ATC.Condition_Unique_Name__c}"/>
+                    </apex:column>
+                -->    
+                </apex:pageBlockTable>
+              
+                <br></br>
+               <apex:commandButton value="{!$Label.Add_Row}"  action="{!addRow}" reRender="taskConditionTable" immediate="true"/>
+           </apex:pageBlockSection>
+           
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

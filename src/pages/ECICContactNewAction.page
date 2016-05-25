@@ -1,0 +1,9 @@
+<apex:page standardController="Contact" action="/{!$ObjectType.Contact.keyPrefix}/e?cancelURL={!$CurrentPage.parameters.retURL}&ent=
+Contact&nooverride=1&{!IF(NOT(ISPICKVAL($User.Country_Code__c,'')), '00N20000003LWLi='
++CASE($User.Country_Code__c, 'AT','AT','BG','BG','CH','CH','CZ','CZ','GR','GR','HU','HU','IT','IT','PL','PL','RO','RO','RS','RS','ES','ES','PT','PT','NL','NL','BE','BE','LU','LU','DE','DE','NO','NO','GB','GB','SE','SE','FR','FR','CR','CR','SV','SV','GT','GT','NI','NI','HN','HN','PA','PA','EC','EC','CO','CO','TT','TT','ZA','ZA','BW','BW','NA','NA','LS','LS','SZ','SZ','ZW','ZW','ZM','ZM','MW','MW','AO','AO','' ) 
++ '&00N20000002xLlw='+CASE($User.Country_Code__c, 'AT','German','BG','Bulgarian','CH','German','CZ','Czech','GR','Greek','HU','Hungarian',
+'IT','Italian','PL','Polish','RO','Romanian','RS','Serbian','ES','Spanish','PT','Portuguese','BE','English','NL','English','NL','English','Gb','English','NO','Norwegian','SE','Swedish','DE','German','FR','French','CR','Spanish','SV','Spanish','GT','Spanish','NI','Spanish','HN','Spanish','PA','Spanish','EC','Spanish','CO','Spanish','TT','English','ZA','English','BW','English','NA','English','LS','English','SZ','English','ZW','English','ZM','English','MW','English','AO','English','') ,'') }
+&con10={!$CurrentPage.parameters.con10}
+&name_firstcon2=
+{!$CurrentPage.parameters.name_firstcon2}{!IF(NOT(ISBLANK($CurrentPage.parameters.name_lastcon2)), '&name_lastcon2='+$CurrentPage.parameters.name_lastcon2, '')}">
+</apex:page>

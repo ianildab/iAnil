@@ -1,0 +1,10 @@
+<apex:component controller="ECICCaseController" access="global">
+    <apex:attribute name="cntrCode" description="Country Code" type="String" assignTo="{!cntrCode}"/>
+    <apex:attribute name="langCode" description="Language Code" type="String" assignTo="{!langCode}"/>
+    <apex:attribute name="includeClosed" description="Whether to include closed Cases" type="Boolean" assignTo="{!includeClosedCases}"/>
+    <apex:repeat value="{!langCodes}" var="lang">
+      <c:ECICLangContent langCode="{!lang}">
+          <apex:componentBody />
+      </c:ECICLangContent>
+    </apex:repeat>
+</apex:component>

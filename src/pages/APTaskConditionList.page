@@ -1,0 +1,22 @@
+<apex:page id="listDetailPage" standardController="Action_Plan_Item__c" tabStyle="Action_Plan_Item__c" extensions="APTaskCondtionListController" showHeader="false" sidebar="false">
+    <apex:pageBlock id="conditionList" title="Related AP Task Conditions" >
+        <apex:pageBlockTable id="taskConditionTable" value="{!relatedTaskConditions}" var="aptc"  width="100%" > 
+        
+			<apex:column headerValue="{!$ObjectType.AP_Task_Condition__c.fields.Field_Name__c.label}" width="30%">
+			    <apex:outputField id="fieldName" value="{!aptc.Field_value__c}"/> 
+			</apex:column>
+           <apex:column headerValue="{!$ObjectType.AP_Task_Condition__c.fields.Operator__c.label}">
+			    <apex:outputField id="operator" value="{!aptc.Operator__c}" />
+			</apex:column>
+			
+			<apex:column headerValue="{!$ObjectType.AP_Task_Condition__c.fields.Values__c.label}">
+			    <apex:outputField id="values" value="{!aptc.Values__c}"/>
+			</apex:column>
+			
+		<!--	<apex:column headerValue="{!$ObjectType.AP_Task_Condition__c.fields.Condition_Unique_Name__c.label}">
+			    <apex:outputField id="conditionUniqueName" value="{!aptc.Condition_Unique_Name__c}"/>
+			</apex:column>
+		-->	
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+</apex:page>

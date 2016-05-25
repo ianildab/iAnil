@@ -1,0 +1,9 @@
+<apex:component controller="HUB_KAVFPageEmailController2" access="global">
+    <apex:attribute name="article" type="HUB_Internal_Use_Only_Core_Message__kav" assignTo="{!relatedTo}" description="article" />    
+
+<p><b>Article Title:</b> {!Title}</p>
+<p><b>Article Summary:</b> {!Summary}</p> 
+<p><b>Channel:</b> {!Channels}</p>
+
+<p>To view more details of this article, click <a href ="{! $Label.HUB_EmailLinkInstanceURL + relatedTo.id}">here</a></p>
+</apex:component>

@@ -1,0 +1,6 @@
+<apex:page standardController="Case" extensions="ECICCaseDispather" action="{!newcase}">
+<apex:form >
+<apex:pageMessages /> 
+<div align="center"><apex:commandButton value="Back" action="{!redirectToMain}"/></div>
+</apex:form>
+</apex:page>

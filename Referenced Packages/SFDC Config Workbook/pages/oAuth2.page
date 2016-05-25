@@ -1,0 +1,17 @@
+<apex:page controller="cwbtool.oAuthController" sidebar="false" action="{!validateOAuth}" tabStyle="CWB_Setup__tab">
+    <apex:stylesheet value="{!URLFOR($Resource.cwbtool__cwb,'/cwb/css/bootstrap2.css')}" />
+    <apex:sectionHeader subtitle="Add new Master License Org" title="CWB License Management"></apex:sectionHeader>
+    <apex:form styleClass="form-inline">
+        <apex:pageBlock title="Please select your master org environment">
+            <apex:pageMessages />
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Login With Salesforce" action="{!oAuthAction}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="3">
+                <apex:selectList value="{!strDomain}" multiselect="false" size="1" styleClass="form-control">
+                    <apex:selectOptions value="{!DomainDetail}" />
+                </apex:selectList>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

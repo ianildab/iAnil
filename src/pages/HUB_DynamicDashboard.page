@@ -1,0 +1,763 @@
+<apex:page standardController="Case" extensions="HUB_DynamicDashboard" readOnly="false" sidebar="false" standardStylesheets="false" action="{!createUser}">
+  <apex:includeScript value="/support/console/22.0/integration.js"/>    
+   <script>
+   
+        function openPrimaryTab() {
+            if (sforce.console.isInConsole()) {
+                    sforce.console.openPrimaryTab(null,'/500', true, 'Cases');
+
+            } else {
+                    if(document.URL.indexOf('{!$Label.HUB_EmailLinkIMCCommunityURL}') > -1){
+                        window.top.location = '{!$Label.HUB_EmailLinkIMCCommunityURL}'+'500/o';
+                    }else{
+                        window.top.location ='/500/o';
+                    }
+                }
+            }
+             
+            function gotoLearning() {
+            if (sforce.console.isInConsole()) {
+                    sforce.console.openPrimaryTab(null,'/'+'{!BPUrl}', true, 'Learning');
+
+            } else {
+                    if(document.URL.indexOf('{!$Label.HUB_EmailLinkIMCCommunityURL}') > -1){
+                        window.top.location = '{!$Label.HUB_EmailLinkIMCCommunityURL}'+'{!BPUrl}';
+                    }else{
+                        window.top.location ='/'+'{!BPUrl}';
+                    }
+                }
+            }
+            function gotoKnowledge() {
+            if (sforce.console.isInConsole()) {
+                    sforce.console.openPrimaryTab(null,'/'+'_ui/knowledge/ui/KnowledgeHome', true, 'Knowledge');
+
+            } else {
+                    if(document.URL.indexOf('{!$Label.HUB_EmailLinkIMCCommunityURL}') > -1){
+                        window.top.location = '{!$Label.HUB_EmailLinkIMCCommunityURL}'+'_ui/knowledge/ui/KnowledgeHome';
+                    }else{
+                        window.top.location ='/'+'_ui/knowledge/ui/KnowledgeHome';
+                    }
+                }
+            }
+            
+            function gotoContent() {
+            if (sforce.console.isInConsole()) {
+                    sforce.console.openPrimaryTab(null,'/'+'{!contentUrl}', true, 'Content');
+
+            } else {
+                    if(document.URL.indexOf('{!$Label.HUB_EmailLinkIMCCommunityURL}') > -1){
+                        window.top.location = '{!$Label.HUB_EmailLinkIMCCommunityURL}'+'{!contentUrl}';
+                    }else{
+                        window.top.location ='/'+'{!contentUrl}';
+                    }
+                }
+            }
+            
+            
+            function goToLink(Id) {
+            if (sforce.console.isInConsole()) {
+             
+                    sforce.console.openPrimaryTab(null,'/'+Id, true, '');
+
+            } else {
+                if(document.URL.indexOf('{!$Label.HUB_EmailLinkIMCCommunityURL}') > -1){
+                
+                    window.open('{!$Label.HUB_EmailLinkIMCCommunityURL}'+Id, "_blank");
+                }else{
+                   
+                    window.open('/'+Id, "_blank");
+                }
+             }
+            }
+            
+            function goToContentLink(Id,title) {
+            if (sforce.console.isInConsole()) {
+                    sforce.console.openPrimaryTab(null,'/'+Id, true, 'Content: '+ title);
+
+            } else {
+                if(document.URL.indexOf('{!$Label.HUB_EmailLinkIMCCommunityURL}') > -1){
+                    window.open('{!$Label.HUB_EmailLinkIMCCommunityURL}'+Id, "_blank");
+                }else{
+                    window.open('/'+Id, "_blank");
+                }
+             }
+            }
+            
+            function gotoTraining(){
+                window.open('{!$Label.HUB_partnerCommunityTrainingURL}', "_blank");
+            }
+           
+  </script>
+  <style>
+  #headerClass{
+    background:red;
+    color: green;
+  }
+  .noSidebarCell{
+    padding-top:0px;
+    Padding-right:0px;
+    
+  }
+  .headerDiv{
+    
+  }
+  #contentWrapper{
+    min-width:950px;
+  }
+  .viewmoreLink{
+    font-weight:bold;color:#fff; float:right;margin-right:10px;text-decoration:none;cursor:pointer;
+  }
+  .x-plain-body{overflow:visible;}
+  </style>
+  <apex:form id="pageid">
+   <div style="width:100%;margin-right:15px; min-width:900px; background-image: url('{!$Resource.HUB_DashBoardHeader}'); background-repeat: no-repeat; background-position: right top;background-size: 750px 50px; " >
+       
+   <div style="font-weight: bold; width:100%; padding-top:5px;">
+        <apex:image url="{!$Resource.HUB_KoBottle}" style="vertical-align:bottom;"/><span style="vertical-align:middle; color:#717171; font-size:14px;">Intel Dashboard</span>
+        <div style="float:right;padding-right:100px;text-decoration:none; padding-top:17px;"><apex:outputLink style="text-decoration:none; " value="/apex/HUB_UserPreferencesForCommunityUsersOP" target="_blank">Alert Settings</apex:outputLink></div>
+        
+   </div><br /> 
+   <div style="position:relative; width: 100px; margin-left:510px; margin-bottom:-42px;">
+    <apex:outputLink ><apex:image url="{!URLFOR($Resource.HUB_visitCokechatter)}" onclick="window.open('{!$Label.Hub_URL_On_visitCokechatter_Image}')"/></apex:outputLink>
+    </div> 
+  <div id="container" style="width:97%; min-width:800px; background:#F7F7F7; height:1130px; padding:10px; padding-top:10px; border-radius: 10px; border:1px solid #CFCFCF;">
+    
+    <div style="width:45%;float:right;margin-top:-7px;">
+             <table style="float:right;">
+                <tr>
+                     <td>
+                        <apex:actionStatus id="filterStatus">
+                            <apex:facet name="start">
+                                <img src="/img/loading.gif" title="Please Wait..." />
+                            </apex:facet>
+                        </apex:actionStatus>
+                    </td>
+                    <td><b>Business Unit:</b></td><td><b>Category:</b></td><td><b>Brands:</b></td>
+                </tr>
+                <tr>
+                       
+                    <td><b>Filter By:&nbsp;</b></td>
+                    <td><apex:selectList style="width:120px;" id="businessUnit" value="{!businessUnitFilter}" size="1">
+                                <apex:actionSupport event="onchange" action="{!FilterByInput}" reRender="dt1,dt2,pbs1" status="filterStatus"/>
+                            <apex:selectOptions value="{!BusinessUnits}"/>
+                         </apex:selectList>
+                    </td>
+                    <td><apex:selectList style="width:120px;" id="category" value="{!categoryFilter}" size="1">
+                            <apex:actionSupport event="onchange" action="{!FilterByInput}" reRender="dt1,dt2,pbs1" status="filterStatus"/>
+                        <apex:selectOptions value="{!Category}"/>
+                        </apex:selectList>
+                    </td>
+                    <td>
+                    <apex:selectList style="width:120px;" id="brand" value="{!brandFilter}" size="1">
+                         <apex:actionSupport event="onchange" action="{!FilterByInput}" reRender="dt1,dt2,pbs1" status="filterStatus"/>
+                    <apex:selectOptions value="{!Brands}"/>
+                    </apex:selectList>
+                    </td>
+                </tr>
+             </table>
+           
+    </div> 
+    <!--div style="position:relative; margin-left:520px; margin-top:-32px;">
+    <apex:outputLink ><apex:image url="{!URLFOR($Resource.HUB_visitCokechatter)}" onclick="window.open('{!$Label.Hub_URL_On_visitCokechatter_Image}')"/></apex:outputLink>
+    </div--> 
+    
+    <div style="width:470Px; text-align:left; padding:5px; padding-left:5px; padding-right:5px;  margin-left:8px; padding-bottom: 5px; border-radius: 10px 15px 0px 0px;border: 2px solid #E60000; border-bottom:none;"> 
+           <span style="font-weight:bold; color:#000;font-size:14px;">Actions: &nbsp;</span>
+           <apex:commandButton value="+ Case" action="/setup/ui/recordtypeselect.jsp?ent=Case&nooverride=1&retURL=%2F500%2Fo&save_new_url=%2F500%2Fe%3FretURL%3D%2F500%2Fo" />&nbsp;
+           <apex:commandButton value="+ Learning" action="/{!BPUrl}/e?retURL=apex/HUB_DynamicDashboard" rendered="{!TEXT($User.UserType)!='PowerPartner'}"/>&nbsp;
+           <apex:commandButton value="+ Learning" action="/{!BPUrl}/e?retURL={!$label.HUB_EmailLinkIMCCommunityURL}apex/HUB_DynamicDashboard" rendered="{!TEXT($User.UserType)='PowerPartner'}"/>&nbsp;
+           <apex:commandButton value="+ Content" action="/{!contentUrl}/e?retURL=apex/HUB_DynamicDashboard" rendered="{!TEXT($User.UserType)!='PowerPartner'}" />&nbsp;
+           <apex:commandButton value="+ Content" action="{!contentUrl}/e?retURL={!$label.HUB_EmailLinkIMCCommunityURL}apex/HUB_DynamicDashboard" rendered="{!TEXT($User.UserType)='PowerPartner'}" />&nbsp;
+           <apex:commandButton rendered="{!Knowledgevisibility}" value="+ Knowledge Article" action="/knowledge/publishing/knowledgePublishingHome.apexp"/>&nbsp;
+           <apex:commandButton value="Go To Case List" onclick="openPrimaryTab();return false"/>&nbsp;
+           <apex:commandButton rendered="{!TEXT($User.UserType)=='PowerPartner'}" value="{!$Label.HUB_partnerCommunityTrainingAnchorText}" onclick="gotoTraining();return false" style="Background:#B9B7BD;" />          
+           <!--<apex:outputLink value="/apex/HUB_UserPreferencesForCommunityUsers" target="_blank">User Preference Input</apex:outputLink> &nbsp;
+           <apex:outputLink value="/apex/HUB_UserPreferencesForCommunityUsersOP" target="_blank">User Preference Output</apex:outputLink>
+           <!--<apex:commandButton value="Manage Influencers" onclick="goToInfluencerManage();return false"/>-->
+    
+    </div>
+    <!--div style="position:relative; margin-left:520px; margin-top:-32px;">
+    <apex:outputLink ><apex:image url="{!URLFOR($Resource.HUB_visitCokechatter)}" onclick="window.open('{!$Label.Hub_URL_On_visitCokechatter_Image}')"/></apex:outputLink>
+    </div-->        
+    
+    <div style="width:54%;float:left;">
+     
+             <div style="background:#fff; border:1px solid #CFCFCF; border-radius: 10px;"> 
+             <div style="background:#E60000;height:20px; padding-left:5px; padding-top:5px; border-radius: 5px;" ><span style="font-weight:bold;color:#fff;"><apex:outputText value=" {!FeedSectionHeader}"></apex:outputText></span> </div>
+                <div style="overflow-y:scroll; height:1024px;padding:10px;">
+                    <apex:outputPanel id="pbs1">
+                    
+                    
+                            <apex:repeat value="{!NewsFeed}" var="ss">
+                            
+                                 <apex:outputPanel style="line-height: 18px;" rendered="{!ss.ContentFileName != ''}" id="OP_ContentFileName">
+                                     <apex:outputPanel rendered="{!BEGINS(ss.ParentId,casePrefix)}" id="OP_ContentFileName_Case">
+                                           Case&nbsp;<apex:outputLink onclick="goToLink('{!ss.ParentId}');return false" style="color:#005C99; text-decoration: none;">{!ss.Parent.Name}</apex:outputLink> 
+                                         -&nbsp;{!caseMap[ss.ParentId].Subject} <BR/>
+                                         
+                                         <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> posted a file <BR/>
+                                         {!ss.ContentFileName}<BR/>
+                                        <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B> <br />
+                                        <hr />
+                                     </apex:outputPanel>
+                                     
+                                     <!--Learning Feeds--HUB 2.7-->
+                                     <apex:outputPanel rendered="{!BEGINS(ss.ParentId,BPUrl) && ss.Type='ContentPost'}" id="OP_ContentFileName_Learning">
+                                           Learning &nbsp;<apex:outputLink onclick="goToLink('{!ss.ParentId}');return false" style="color:#005C99; text-decoration: none;">{!ss.Parent.Name}</apex:outputLink> 
+                                         -  &nbsp;{!learningMap[ss.ParentId].Title__c} <BR/>
+                                         
+                                         <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> posted a file <BR/>
+                                         {!ss.ContentFileName}<BR/>
+                                        <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B> <br />
+                                        <hr />
+                                     </apex:outputPanel>
+                                     
+                                      <!--chatter file--HUB 2.7-->
+                                      <apex:outputPanel rendered="{!BEGINS(ss.ParentId,ChatterPrefix) && ss.Type='ContentPost'}" id="OP_ContentFileName_Chatter">
+                                         <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> posted a file <BR/>
+                                         {!ss.ContentFileName}<BR/>
+                                        <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B> <br />
+                                        <hr />
+                                     </apex:outputPanel>
+                                     
+                                     <!-- Content object -->
+                                     <apex:outputPanel rendered="{!BEGINS(ss.ParentId,contentPrefix) && ss.Type='ContentPost'}" id="OP_ContentFileName_Content">
+                                           Content &nbsp;<apex:outputLink onclick="goToContentLink('{!contentMap[ss.ParentId]}','{!JSENCODE(contentMap[ss.ParentId].Title__c)}');return false" style="color:#005C99; text-decoration: none;">{!ss.Parent.Name}</apex:outputLink> 
+                                         -  &nbsp;{!contentMap[ss.ParentId].Title__c} <BR/>
+                                         
+                                         <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> posted a file <BR/>
+                                         {!ss.ContentFileName}<BR/>
+                                        <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B> <br />
+                                        <hr />
+                                     </apex:outputPanel>
+                                     
+                                 </apex:outputPanel>
+                                     
+                                <apex:outputPanel rendered="{!ss.body!= ''}" style="line-height: 18px;" id="OP_body">
+                                        
+                                        <!--for comment on post-->
+                                        
+                                        <apex:outputPanel rendered="{!ss.FeedComments!=''}" >
+                                         <apex:repeat value="{!ss.FeedComments}" var="fc">
+                                         
+                                            <apex:outputPanel id="OP_CommentOnPost_Case" rendered="{!BEGINS(ss.ParentId,casePrefix)}">
+                                            Case&nbsp;<apex:outputLink onclick="goToLink('{!ss.ParentId}');return false" style="color:#005C99; text-decoration: none;">{!ss.Parent.Name}</apex:outputLink>
+                                              - Title {!caseMap[ss.ParentId].Subject}<BR/>
+                                             <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!userName[fc.InsertedById].Name}</apex:outputLink> commented on a post: <BR/>
+                                             {!fc.CommentBody}<BR/>
+                                              <B> <apex:outputText value=" {!fc.CreatedDate}"></apex:outputText></B> <br />
+                                             <hr />
+                                            </apex:outputPanel>  
+                                           <!--Learnings-HUB 2.7-->  
+                                         <apex:outputPanel rendered="{!BEGINS(ss.ParentId,BPUrl)}" id="OP_CommentOnPost_Learning">
+                                               Learning &nbsp;<apex:outputLink onclick="goToLink('{!ss.ParentId}');return false" style="color:#005C99; text-decoration: none;">{!ss.Parent.Name}</apex:outputLink>
+                                              -  {!learningMap[ss.ParentId].Title__c}<BR/>
+                                             <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!userName[fc.InsertedById].Name}</apex:outputLink> commented on a post: <BR/>
+                                             {!fc.CommentBody}<BR/>
+                                              <B> <apex:outputText value=" {!fc.CreatedDate}"></apex:outputText></B> <br />
+                                             <hr />
+                                             </apex:outputPanel>
+                                             
+                                             <!-- comment on post : content object -->
+                                             <apex:outputPanel rendered="{!BEGINS(ss.ParentId,contentPrefix)}" id="OP_CommentOnPost_Content">
+                                               Content &nbsp;<apex:outputLink onclick="goToContentLink('{!contentMap[ss.ParentId]}','{!JSENCODE(contentMap[ss.ParentId].Title__c)}');return false" style="color:#005C99; text-decoration: none;">{!ss.Parent.Name}</apex:outputLink>
+                                              -  {!contentMap[ss.ParentId].Title__c}<BR/>
+                                             <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!userName[fc.InsertedById].Name}</apex:outputLink> commented on a post: <BR/>
+                                             {!fc.CommentBody}<BR/>
+                                              <B> <apex:outputText value=" {!fc.CreatedDate}"></apex:outputText></B> <br />
+                                             <hr />
+                                             </apex:outputPanel>
+                                                 
+                                         </apex:repeat>
+                                       </apex:outputPanel>  
+                                        <!--Learnings-HUB 2.7-->  
+                                       <apex:outputpanel rendered="{!BEGINS(ss.ParentId,BPUrl) && ss.Type='TextPost'}" id="OP_body_Learning" >
+                                              Learning &nbsp;<apex:outputLink onclick="goToLink('{!ss.ParentId}');return false" style="color:#005C99; text-decoration: none;">{!ss.Parent.Name}</apex:outputLink>
+                                              - {!learningMap[ss.ParentId].Title__c} <BR/>
+                                             <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> posted: <BR/>
+                                             {!ss.body}<BR/>
+                                              <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B> <br />
+                                             <hr />  
+                                        </apex:outputpanel>
+                                        
+                                        <apex:outputpanel rendered="{!BEGINS(ss.ParentId,casePrefix) && ss.Type='TextPost'}" id="OP_body_Case" >
+                                              Case&nbsp;<apex:outputLink onclick="goToLink('{!ss.ParentId}');return false" style="color:#005C99; text-decoration: none;">{!ss.Parent.Name}</apex:outputLink>
+                                              - Title {!caseMap[ss.ParentId].Subject}<BR/>
+                                             <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> posted: <BR/>
+                                             {!ss.body}<BR/>
+                                              <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B> <br />
+                                             <hr />  
+                                        </apex:outputpanel>
+                                        
+                                        <apex:outputpanel rendered="{!BEGINS(ss.ParentId,contentPrefix) && ss.Type='TextPost'}" id="OP_body_Content" >
+                                              Content &nbsp;<apex:outputLink onclick="goToContentLink('{!contentMap[ss.ParentId]}','{!JSENCODE(contentMap[ss.ParentId].Title__c)}');return false" style="color:#005C99; text-decoration: none;">{!ss.Parent.Name}</apex:outputLink>
+                                              - {!contentMap[ss.ParentId].Title__c} <BR/>
+                                             <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> posted: <BR/>
+                                             {!ss.body}<BR/>
+                                              <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B> <br />
+                                             <hr />  
+                                        </apex:outputpanel>
+                                        
+                                         <!-- Feed from Chatter post -->
+                                         <!-- feed post -->
+                                         <apex:outputpanel rendered="{!BEGINS(ss.ParentId,ChatterPrefix) && ss.Type='TextPost'}" id="OP_ChatterPost" >
+                                             <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> posted: <BR/>
+                                             {!ss.body}<BR/>
+                                              <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B> <br />
+                                             <hr />  
+                                        </apex:outputpanel>
+
+                                     <apex:outputPanel rendered="{!BEGINS(ss.ParentId,ChatterPrefix) && ss.Type='PollPost'}" id="OP_PollPost_Chatter">
+                                         <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> posted a Poll<BR/>
+                                         {!ss.Body}<BR/>
+                                        <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B> <br />
+                                        <hr />
+                                     </apex:outputPanel>
+                                     
+                                     <apex:outputPanel rendered="{!BEGINS(ss.ParentId,ChatterPrefix) && ss.Type='AdvancedTextPost'}" id="OP_Announcement_Chatter">
+                                         <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> posted a Announcement<BR/>
+                                         {!ss.Body}<BR/>
+                                        <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B> <br />
+                                        <hr />
+                                     </apex:outputPanel>
+
+                                        <!-- #END Feed from Chatter post -->
+                                </apex:outputPanel>
+                                 <apex:outputPanel rendered="{!ss.LinkUrl!= ''}" style="line-height: 18px;" id="OP_URL">
+                                 <apex:outputPanel rendered="{!BEGINS(ss.ParentId,ChatterPrefix) && ss.Type='LinkPost'}" id="OP_LinkPost_Chatter">
+                                         <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> posted a Link<BR/>
+                                         {!ss.LinkUrl}<BR/>
+                                        <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B> <br />
+                                        <hr />
+                                     </apex:outputPanel>
+                                </apex:outputPanel>
+                                
+                                
+                                    <apex:outputPanel rendered="{!ss.FeedTrackedChanges !=''}" style="line-height: 18px;" id="OP_FeedTrackedChanges" >
+                                     <apex:repeat value="{!ss.FeedTrackedChanges }" var="c" id="rep" rendered="{!ss.FeedTrackedChanges != ''}" >
+                                            <apex:outputPanel rendered="{!BEGINS(ss.ParentId,casePrefix) && c.oldvalue!='' && c.Newvalue!='' && c.FieldName!='feedEvent' && ss.Type='TrackedChange'}" id="OP_FeedTrackedChanges_Case">
+                                               <apex:variable value="{!c.oldvalue} " var="strParsedOldValue" />
+                                               <apex:variable value="{!c.Newvalue} " var="strParsedNewValue" />
+                                                <apex:outputPanel rendered="{!BEGINS(c.FieldName,'Case') && !BEGINS(strParsedOldValue,userPrefix) && c.FieldName!='Case.Parent' && !(BEGINS(strParsedNewValue,userPrefix) || BEGINS(strParsedOldValue,'00G'))}">
+                                                    Case&nbsp;<apex:outputLink onclick="goToLink('{!ss.ParentId}');return false" style="color:#005C99; text-decoration: none;">{!ss.Parent.Name}</apex:outputLink>
+                                               - &nbsp;{!caseMap[ss.ParentId].Subject} <BR/> 
+                                                <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> changed {!fieldLabelMap[RIGHT(c.FieldName,LEN(c.FieldName)-(FIND('.', c.FieldName)))]} from {!c.oldvalue } to {!c.Newvalue} <BR/>
+                                                  
+                                                  <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                  <hr />
+                                                </apex:outputPanel>
+                                                
+                                                <apex:outputPanel rendered="{!c.FieldName='ownerAssignment' && !BEGINS(strParsedOldValue,userPrefix)}">
+                                                   Case&nbsp;<apex:outputLink onclick="goToLink('{!ss.ParentId}');return false"  style="color:#005C99; text-decoration: none;">{!ss.Parent.Name}</apex:outputLink>
+                                                - {!caseMap[ss.ParentId].Subject} <BR/> 
+                                                <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> changed Case Owner (using assignment rule) from {!c.oldvalue } to {!c.Newvalue} .<BR/>
+                                                  
+                                                  <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                  <hr />
+                                                </apex:outputPanel>
+                                                
+                                                <apex:outputPanel rendered="{!c.FieldName='ownerAccepted' && !BEGINS(strParsedNewValue,userPrefix)}">
+                                                   Case&nbsp;<apex:outputLink onclick="goToLink('{!ss.ParentId}');return false"  style="color:#005C99; text-decoration: none;">{!ss.Parent.Name}</apex:outputLink>
+                                                - {!caseMap[ss.ParentId].Subject} <BR/> 
+                                                <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> accepted this case.<BR/>
+                                                  
+                                                  <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                  <hr />
+                                                </apex:outputPanel>
+                                                
+                                                <apex:outputPanel rendered="{!c.FieldName='Case.Parent' && BEGINS(strParsedOldValue,casePrefix)}">
+                                                   Case&nbsp;<apex:outputLink onclick="goToLink('{!ss.ParentId}');return false"  style="color:#005C99; text-decoration: none;">{!ss.Parent.Name}</apex:outputLink>
+                                               - {!caseMap[ss.ParentId].Subject} <BR/> 
+                                                <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> changed Parent Case from {!caseMap[c.oldvalue].Subject} to {!caseMap[c.Newvalue].Subject} <BR/>
+                                                  
+                                                  <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                  <hr />
+                                                </apex:outputPanel>
+                                                  
+                                                
+                                            </apex:outputPanel>
+                                            
+                                            <apex:outputPanel rendered="{!BEGINS(ss.ParentId,casePrefix) && c.oldvalue!='' && c.Newvalue!='' && c.FieldName='feedEvent' && ss.Type='ChangeStatusPost'}" id="OP_FeedTrackedChanges_feedEvent_Case">
+                                                   Case&nbsp;<apex:outputLink onclick="goToLink('{!ss.ParentId}');return false" style="color:#005C99; text-decoration: none;">{!ss.Parent.Name}</apex:outputLink>
+                                                - {!caseMap[ss.ParentId].Subject} <BR/> 
+                                                <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> changed Stage.<BR/>
+                                                  <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                <hr />
+                                            </apex:outputPanel>
+                                            
+                                            <apex:outputPanel rendered="{!BEGINS(ss.ParentId,casePrefix)  && c.oldvalue='' && c.Newvalue!='' && c.FieldName!='feedEvent' && ss.Type='TrackedChange'}" id="OP_FeedTrackedChanges_OldvalueNull_Case">
+                                                <apex:variable value="{!c.Newvalue} " var="strParsedValue" />
+                                                
+                                                <apex:outputPanel rendered="{!c.FieldName!='Case.Parent' && BEGINS(c.FieldName,'Case')}">
+                                                   Case&nbsp;<apex:outputLink onclick="goToLink('{!ss.ParentId}');return false" style="color:#005C99; text-decoration: none;">{!ss.Parent.Name}</apex:outputLink>
+                                                - {!caseMap[ss.ParentId].Subject} <BR/> 
+                                                <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> changed {!fieldLabelMap[RIGHT(c.FieldName,LEN(c.FieldName)-(FIND('.', c.FieldName)))]} from <BR/>
+                                                 blank to {!c.Newvalue} <BR/>
+                                                  <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                  <hr />
+                                                </apex:outputPanel>
+                                                
+                                                
+                                                <apex:outputPanel rendered="{!c.FieldName='Case.Parent' && BEGINS(strParsedValue,casePrefix)}">
+                                                    Case&nbsp;<apex:outputLink onclick="goToLink('{!ss.ParentId}');return false" style="color:#005C99; text-decoration: none;">{!ss.Parent.Name}</apex:outputLink>
+                                               - {!caseMap[ss.ParentId].Subject} <BR/> 
+                                                <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> associated Case <apex:outputLink value="/{!caseMap[c.Newvalue].Id}" target="_blank" style="color:#005C99; text-decoration: none;"> {!caseMap[c.Newvalue].CaseNumber} </apex:outputLink>  - {!caseMap[c.Newvalue].Subject} <BR/>
+                                                  <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                  <hr />
+                                                </apex:outputPanel>
+                                                   
+                                                
+                                            </apex:outputPanel>
+                                            
+                                            <apex:outputPanel rendered="{!BEGINS(ss.ParentId,casePrefix)  && c.oldvalue!='' && c.Newvalue='' && c.FieldName!='feedEvent' && ss.Type='TrackedChange'}" id="OP_FeedTrackedChanges_NewvalueNull_Case">
+                                                <apex:variable value="{!c.oldvalue} " var="strParsedOldValue" />
+                                                <apex:outputPanel rendered="{!c.FieldName!='Case.Parent' && BEGINS(c.FieldName,'Case')}">
+                                                    Case&nbsp;<apex:outputLink onclick="goToLink('{!ss.ParentId}');return false" style="color:#005C99; text-decoration: none;">{!ss.Parent.Name}</apex:outputLink>
+                                                - {!caseMap[ss.ParentId].Subject} <BR/> 
+                                                <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> changed {!fieldLabelMap[RIGHT(c.FieldName,LEN(c.FieldName)-(FIND('.', c.FieldName)))]} from <BR/>
+                                                 {!c.oldvalue} to  blank <BR/>
+                                                  <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                  <hr />
+                                                </apex:outputPanel>
+                                                
+                                                <apex:outputPanel rendered="{!c.FieldName='Case.Parent' && BEGINS(strParsedOldValue,casePrefix)}">
+                                                   Case  &nbsp;<apex:outputLink onclick="goToLink('{!ss.ParentId}');return false"  style="color:#005C99; text-decoration: none;">{!ss.Parent.Name}</apex:outputLink>
+                                                - {!caseMap[ss.ParentId].Subject} <BR/> 
+                                                <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> changed Parent Case from  {!caseMap[c.oldvalue].Subject} to  blank <BR/>
+                                                  <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                  <hr />
+                                                </apex:outputPanel>
+                                                  
+                                                
+                                            </apex:outputPanel>
+                                         
+                                            <apex:outputPanel rendered="{!BEGINS(ss.ParentId,impactedRegionPrefix) && ss.Type='TrackedChange' && c.FieldName='HUB_Impacted_Region__c.Name'}" id="OP_FeedTrackedChanges_IR">
+                                               Case&nbsp;<apex:outputLink onclick="goToLink('{!caseMap[impactRegionMap[ss.ParentId].Case__c].Id}');return false" style="color:#005C99; text-decoration: none;">{!caseMap[impactRegionMap[ss.ParentId].Case__c].CaseNumber}</apex:outputLink>
+                                                - {!caseMap[impactRegionMap[ss.ParentId].Case__c].Subject} <BR/> 
+                                                <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> changed Impacted Region Name from a blank value to {!ss.Parent.Name}.<BR/>
+                                                  <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                <hr />
+                                            </apex:outputPanel>
+                                            <apex:outputPanel rendered="{!BEGINS(ss.ParentId,impactedRegionPrefix) && ss.Type='TrackedChange' && c.FieldName!='HUB_Impacted_Region__c.Name'}" id="OP_FeedTrackedChangesOther_IR">
+                                               Case&nbsp;<apex:outputLink onclick="goToLink('{!caseMap[impactRegionMap[ss.ParentId].Case__c].Id}');return false" style="color:#005C99; text-decoration: none;">{!caseMap[impactRegionMap[ss.ParentId].Case__c].CaseNumber}</apex:outputLink>
+                                                - {!caseMap[impactRegionMap[ss.ParentId].Case__c].Subject} <BR/> 
+                                                <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> has modified {!ss.Parent.Name}.<BR/>
+                                                  <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                <hr />
+                                            </apex:outputPanel>
+                                            <apex:outputPanel rendered="{!BEGINS(ss.ParentId,urlprefix) && ss.Type='TrackedChange' && c.FieldName='HUB_URL__c.Name'}" id="OP_FeedTrackedChanges_URL">
+                                               Case&nbsp;<apex:outputLink onclick="goToLink('{!caseMap[urlMap[ss.ParentId].Case__c].Id}');return false" style="color:#005C99; text-decoration: none;">{!caseMap[urlMap[ss.ParentId].Case__c].CaseNumber}</apex:outputLink>
+                                                - {!caseMap[urlMap[ss.ParentId].Case__c].Subject} <BR/>
+                                                <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> changed URL ID from a blank value to  {!ss.Parent.Name}. <BR/>
+                                                  <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                <hr />
+                                            </apex:outputPanel>
+                                            <apex:outputPanel rendered="{!BEGINS(ss.ParentId,urlprefix) && ss.Type='TrackedChange' && c.FieldName!='HUB_URL__c.Name'}" id="OP_FeedTrackedChangesOther_URL">
+                                               Case&nbsp;<apex:outputLink onclick="goToLink('{!caseMap[urlMap[ss.ParentId].Case__c].Id}');return false" style="color:#005C99; text-decoration: none;">{!caseMap[urlMap[ss.ParentId].Case__c].CaseNumber}</apex:outputLink>
+                                                - {!caseMap[urlMap[ss.ParentId].Case__c].Subject} <BR/>
+                                                <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink>   has modified: {!ss.Parent.Name} <BR/>
+                                                  <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                <hr />
+                                            </apex:outputPanel>
+                                            <apex:outputPanel rendered="{!BEGINS(ss.ParentId,caseBestPracticePrefix) && ss.Type='TrackedChange' && c.FieldName='HUB_Case_Best_Practice_Association__c.Name'}" id="OP_FeedTrackedChanges_BP">
+                                               Case&nbsp;<apex:outputLink onclick="goToLink('{!caseMap[bestPracticeMap[ss.ParentId].Case_BestPractice__c].Id}');return false" style="color:#005C99; text-decoration: none;">{!caseMap[bestPracticeMap[ss.ParentId].Case_BestPractice__c].CaseNumber}</apex:outputLink>
+                                                - {!caseMap[bestPracticeMap[ss.ParentId].Case_BestPractice__c].Subject} <BR/>
+                                                <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> changed Case-Best Practive Association Name from a blank value to {!ss.Parent.Name}. <BR/>
+                                                  <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                <hr />
+                                            </apex:outputPanel>
+                                            <apex:outputPanel rendered="{!BEGINS(ss.ParentId,caseBestPracticePrefix) && ss.Type='TrackedChange' && c.FieldName!='HUB_Case_Best_Practice_Association__c.Name'}" id="OP_FeedTrackedChangesOther_BP">
+                                               Case&nbsp;<apex:outputLink onclick="goToLink('{!caseMap[bestPracticeMap[ss.ParentId].Case_BestPractice__c].Id}');return false" style="color:#005C99; text-decoration: none;">{!caseMap[bestPracticeMap[ss.ParentId].Case_BestPractice__c].CaseNumber}</apex:outputLink>
+                                                - {!caseMap[bestPracticeMap[ss.ParentId].Case_BestPractice__c].Subject} <BR/>
+                                                <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> has modified {!ss.Parent.Name}. <BR/>
+                                                  <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                <hr />
+                                            </apex:outputPanel>
+                                            
+                                            <apex:outputPanel rendered="{!BEGINS(ss.ParentId,BPUrl) && ss.Type='TrackedChange' && c.FieldName='HUB_Best_Practices__c.Name' && c.oldvalue=='' && c.Newvalue!=''}" id="OP_FeedTrackedChanges_Learning">
+                                               Learning &nbsp;<apex:outputLink onclick="goToLink('{!learningMap[ss.ParentId]}');return false" style="color:#005C99; text-decoration: none;">{!learningMap[ss.ParentId].Name}</apex:outputLink>
+                                              - {!learningMap[ss.ParentId].Title__c}<BR/>
+                                            <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> created a Learning. <BR/>
+                                              <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                <hr />
+                                            </apex:outputPanel>
+                                            
+                                             <apex:outputPanel rendered="{!BEGINS(ss.ParentId,BPUrl) && ss.Type='TrackedChange' && c.FieldName!='HUB_Best_Practices__c.Name'}" id="OP_FeedTrackedChangesOther_Learning">
+                                              
+                                              <apex:outputPanel rendered="{!c.oldvalue=='' && c.Newvalue==''}" id="TrackedChangeLearning00">
+                                                Learning &nbsp;<apex:outputLink onclick="goToLink('{!learningMap[ss.ParentId]}');return false" style="color:#005C99; text-decoration: none;">{!learningMap[ss.ParentId].Name}</apex:outputLink>
+                                              - {!learningMap[ss.ParentId].Title__c}<BR/>
+                                            <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> changed {!fieldLabelMapForLearning[RIGHT(c.FieldName,LEN(c.FieldName)-(FIND('.', c.FieldName)))]}.<BR/>
+                                            
+                                              <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                <hr />
+                                              </apex:outputPanel>
+                                              
+                                              <apex:outputPanel rendered="{!c.oldvalue!='' && c.Newvalue!=''}" id="TrackedChangeLearning11">
+                                                Learning &nbsp;<apex:outputLink onclick="goToLink('{!learningMap[ss.ParentId]}');return false" style="color:#005C99; text-decoration: none;">{!learningMap[ss.ParentId].Name}</apex:outputLink>
+                                              - {!learningMap[ss.ParentId].Title__c}<BR/>
+                                            <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> changed {!fieldLabelMapForLearning[RIGHT(c.FieldName,LEN(c.FieldName)-(FIND('.', c.FieldName)))]} from  {!c.oldvalue} to {!c.Newvalue}.<BR/>
+                                              <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                <hr />
+                                              </apex:outputPanel>
+                                              
+                                              <apex:outputPanel rendered="{!c.oldvalue=='' && c.Newvalue!=''}" id="TrackedChangeLearning01">
+                                                Learning &nbsp;<apex:outputLink onclick="goToLink('{!learningMap[ss.ParentId]}');return false" style="color:#005C99; text-decoration: none;">{!learningMap[ss.ParentId].Name}</apex:outputLink>
+                                              - {!learningMap[ss.ParentId].Title__c}<BR/>
+                                            <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> changed {!fieldLabelMapForLearning[RIGHT(c.FieldName,LEN(c.FieldName)-(FIND('.', c.FieldName)))]} from  blank  to {!c.Newvalue}.<BR/>
+                                              <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                <hr />
+                                              </apex:outputPanel> 
+                                              
+                                              <apex:outputPanel rendered="{!c.oldvalue!='' && c.Newvalue==''}" id="TrackedChangeLearning10">
+                                                Learning &nbsp;<apex:outputLink onclick="goToLink('{!learningMap[ss.ParentId]}');return false" style="color:#005C99; text-decoration: none;">{!learningMap[ss.ParentId].Name}</apex:outputLink>
+                                              - {!learningMap[ss.ParentId].Title__c}<BR/>
+                                            <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> changed {!fieldLabelMapForLearning[RIGHT(c.FieldName,LEN(c.FieldName)-(FIND('.', c.FieldName)))]} from  {!c.oldvalue} to blank.<BR/>
+                                              <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                <hr />
+                                              </apex:outputPanel> 
+                                              
+                                            </apex:outputPanel>
+                                            <!--For Content-->
+                                            <apex:outputPanel rendered="{!BEGINS(ss.ParentId,contentPrefix) && ss.Type='TrackedChange' && c.FieldName='HUB_Contents__c.Name' && c.oldvalue=='' && c.Newvalue!=''}" id="OP_FeedTrackedChanges_Content">
+                                              Content &nbsp;<apex:outputLink onclick="goToContentLink('{!contentMap[ss.ParentId]}','{!JSENCODE(contentMap[ss.ParentId].Title__c)}');return false" style="color:#005C99; text-decoration: none;">{!contentMap[ss.ParentId].Name}</apex:outputLink>
+                                              - {!contentMap[ss.ParentId].Title__c}<BR/>
+                                            <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> created a content. <BR/>
+                                              <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                <hr />
+                                            </apex:outputPanel>
+                                            
+                                            <apex:outputPanel rendered="{!BEGINS(ss.ParentId,contentPrefix) && ss.Type='TrackedChange' && c.FieldName!='HUB_Contents__c.Name'}" id="OP_FeedTrackedChangesOther_Content">
+                                             
+                                              <apex:outputPanel rendered="{!c.oldvalue=='' && c.Newvalue==''}" id="TrackedChangeContent00">
+                                                Content &nbsp;<apex:outputLink onclick="goToContentLink('{!contentMap[ss.ParentId]}','{!JSENCODE(contentMap[ss.ParentId].Title__c)}');return false" style="color:#005C99; text-decoration: none;">{!contentMap[ss.ParentId].Name}</apex:outputLink>
+                                              - {!contentMap[ss.ParentId].Title__c}<BR/>
+                                               <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> changed {!fieldLabelMapForContent[RIGHT(c.FieldName,LEN(c.FieldName)-(FIND('.', c.FieldName)))]}.<BR/>
+                                               
+                                              <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                <hr />
+                                              </apex:outputPanel>
+                                              
+                                              <apex:outputPanel rendered="{!c.oldvalue!='' && c.Newvalue!=''}" id="TrackedChangeContent11">
+                                                Content &nbsp;<apex:outputLink onclick="goToContentLink('{!contentMap[ss.ParentId]}','{!JSENCODE(contentMap[ss.ParentId].Title__c)}');return false" style="color:#005C99; text-decoration: none;">{!contentMap[ss.ParentId].Name}</apex:outputLink>
+                                              - {!contentMap[ss.ParentId].Title__c}<BR/>
+                                               <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> changed {!fieldLabelMapForContent[RIGHT(c.FieldName,LEN(c.FieldName)-(FIND('.', c.FieldName)))]} from  {!c.oldvalue} to {!c.Newvalue}.<BR/>
+                                              <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                <hr />
+                                              </apex:outputPanel>
+                                              
+                                              <apex:outputPanel rendered="{!c.oldvalue=='' && c.Newvalue!=''}" id="TrackedChangeContent01">
+                                                Content &nbsp;<apex:outputLink onclick="goToContentLink('{!contentMap[ss.ParentId]}','{!JSENCODE(contentMap[ss.ParentId].Title__c)}');return false" style="color:#005C99; text-decoration: none;">{!contentMap[ss.ParentId].Name}</apex:outputLink>
+                                              - {!contentMap[ss.ParentId].Title__c}<BR/>
+                                               <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> changed {!fieldLabelMapForContent[RIGHT(c.FieldName,LEN(c.FieldName)-(FIND('.', c.FieldName)))]} from  blank  to {!c.Newvalue}.<BR/>
+                                              <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                <hr />
+                                              </apex:outputPanel> 
+                                              
+                                              <apex:outputPanel rendered="{!c.oldvalue!='' && c.Newvalue==''}" id="TrackedChangeContent10">
+                                                Content &nbsp;<apex:outputLink onclick="goToContentLink('{!contentMap[ss.ParentId]}','{!JSENCODE(contentMap[ss.ParentId].Title__c)}');return false" style="color:#005C99; text-decoration: none;">{!contentMap[ss.ParentId].Name}</apex:outputLink>
+                                              - {!contentMap[ss.ParentId].Title__c}<BR/>
+                                               <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> changed {!fieldLabelMapForContent[RIGHT(c.FieldName,LEN(c.FieldName)-(FIND('.', c.FieldName)))]} from  {!c.oldvalue} to blank.<BR/>
+                                              <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                                <hr />
+                                              </apex:outputPanel> 
+                                              
+                                            </apex:outputPanel>
+                                           </apex:repeat>
+                                     </apex:outputPanel>
+                                 
+                                                 
+                                   
+                            
+                            <apex:outputPanel rendered="{!ss.ParentId!='' }" style="line-height: 18px;" id="OP_CreateRecord">
+                                    <apex:outputPanel rendered="{!BEGINS(ss.ParentId,casePrefix) && ss.Type='CreateRecordEvent'}" id="OP_CreateRecord_Case">
+                                            Case&nbsp;<apex:outputLink onclick="goToLink('{!ss.ParentId}');return false"  style="color:#005C99; text-decoration: none;">{!ss.Parent.Name}</apex:outputLink>
+                                        - {!caseMap[ss.ParentId].Subject} <BR/>
+                                        
+                                        <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink>  created the Case. <BR/>
+                                         
+                                          <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B> <br />
+                                            <hr /> 
+                                    </apex:outputPanel>
+                                    
+                                    
+                                    
+                                    <apex:outputPanel rendered="{!BEGINS(ss.ParentId,casePrefix) && ss.Type='CaseCommentPost'}" id="OP_CaseComment_Case">
+                                            Case&nbsp;<apex:outputLink onclick="goToLink('{!ss.ParentId}');return false" style="color:#005C99; text-decoration: none;">{!ss.Parent.Name}</apex:outputLink>
+                                        - {!caseMap[ss.ParentId].Subject} <BR/>
+                                        
+                                        <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> posted a Case Comment.  <BR/>
+                                         
+                                          <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B> <br />
+                                            <hr /> 
+                                    </apex:outputPanel>
+                                     <apex:outputPanel rendered="{!BEGINS(ss.ParentId,casePrefix) && ss.Type='AttachArticleEvent'}" id="OP_AttachArticleEvent_Case">
+                                            Case&nbsp;<apex:outputLink onclick="goToLink('{!ss.ParentId}');return false" style="color:#005C99; text-decoration: none;">{!ss.Parent.Name}</apex:outputLink>
+                                        - {!caseMap[ss.ParentId].Subject} <BR/>
+                                        
+                                        <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> attached a Knowledge Article.  <BR/>
+                                         
+                                          <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B> <br />
+                                            <hr /> 
+                                    </apex:outputPanel>
+                                    <apex:outputPanel rendered="{!BEGINS(ss.ParentId,impactedRegionPrefix) && ss.Type='CreateRecordEvent'}" id="OP_CreateRecord_IR">
+                                            Case&nbsp;<apex:outputLink onclick="goToLink('{!caseMap[impactRegionMap[ss.ParentId].Case__c].Id}');return false" style="color:#005C99; text-decoration: none;">{!caseMap[impactRegionMap[ss.ParentId].Case__c].CaseNumber}</apex:outputLink>
+                                            - {!caseMap[impactRegionMap[ss.ParentId].Case__c].Subject} <BR/> 
+                                            <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> added an Impacted Region: {!impactRegionMap[ss.ParentId].Region__c} / Market: {!impactRegionMap[ss.ParentId].Country__c}.<BR/> 
+                                              <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                            <hr />
+                                    </apex:outputPanel>
+                                    <apex:outputPanel rendered="{!BEGINS(ss.ParentId,urlprefix) && ss.Type='CreateRecordEvent'}" id="OP_CreateRecord_URL">
+                                           Case&nbsp;<apex:outputLink onclick="goToLink('{!caseMap[urlMap[ss.ParentId].Case__c].Id}');return false" style="color:#005C99; text-decoration: none;">{!caseMap[urlMap[ss.ParentId].Case__c].CaseNumber}</apex:outputLink>
+                                            - {!caseMap[urlMap[ss.ParentId].Case__c].Subject} <BR/>
+                                            <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> added this URL: {!urlMap[ss.ParentId].URL__c} <BR/>
+                                              <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                            <hr />
+                                    </apex:outputPanel>
+                                    <apex:outputPanel rendered="{!BEGINS(ss.ParentId,caseBestPracticePrefix) && ss.Type='CreateRecordEvent'}" id="OP_CreateRecord_BP">
+                                           Case&nbsp;<apex:outputLink onclick="goToLink('{!caseMap[bestPracticeMap[ss.ParentId].Case_BestPractice__c].Id}');return false" style="color:#005C99; text-decoration: none;">{!caseMap[bestPracticeMap[ss.ParentId].Case_BestPractice__c].CaseNumber}</apex:outputLink>
+                                            - {!caseMap[bestPracticeMap[ss.ParentId].Case_BestPractice__c].Subject} <BR/>
+                                            <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> attached this Learning: {!bestPracticeMap[ss.ParentId].Title__c} <BR/>
+                                              <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                            <hr />
+                                    </apex:outputPanel>
+                                    <!-- dashboard feed for content record -->
+                                     <apex:outputPanel rendered="{!BEGINS(ss.ParentId,relatedContentPrefix) && ss.Type='CreateRecordEvent'}" id="OP_CreateRecord_RC">
+                                           Case&nbsp;<apex:outputLink onclick="goToLink('{!caseMap[relatedContentMap[ss.ParentId].case__c].Id}');return false" style="color:#005C99; text-decoration: none;">{!caseMap[relatedContentMap[ss.ParentId].case__c].CaseNumber}</apex:outputLink>
+                                            - {!caseMap[relatedContentMap[ss.ParentId].case__c].Subject} <BR/>
+                                            <apex:outputLink onclick="goToLink('{!ss.InsertedById}');return false" style="color:#005C99; text-decoration: none;">{!ss.InsertedBy.Name}</apex:outputLink> attached this Content: {!relatedContentMap[ss.ParentId].Content_Title__c} <BR/>
+                                              <B> <apex:outputText value=" {!ss.CreatedDate}"></apex:outputText></B><br />
+                                            <hr />
+                                    </apex:outputPanel>
+                                    
+                                    
+                            </apex:outputPanel>
+                 </apex:repeat>
+            </apex:outputPanel>
+        </div> 
+        </div>  <!--  event calendar section , 19 feb 2015: de scoped item in hub 2.7
+          <br /> 
+        <div style="background:#fff; border:1px solid #CFCFCF; border-radius: 10px;">   
+           <div style="background:#E60000;height:20px; padding-left:5px; padding-top:5px; border-radius: 5px;" ><span style="font-weight:bold; color:#fff;">Upcoming Events</span> </div>
+        <div style="overflow-y:scroll; height:140px;">
+                   <apex:dataTable value="{!EventCalendar}" var="vr" width="100%" id="calDiv" styleClass="list" headerClass="headerRow" rows="5">
+                      <apex:column headerValue="Event Title">
+                        <apex:outputLink value="/{!vr.Id}" target="_blank" style="color:#005C99; text-decoration: none;">{!vr.Subject}</apex:outputLink>
+                      </apex:column>
+                      <apex:column headerValue="Start Date" value="{!vr.StartDateTime}"/>
+                   </apex:dataTable>
+        </div>
+        </div>  -->
+    </div> 
+    
+    
+    <div style="width:45%; float:right;">
+        <div style="background:#fff; border:1px solid #CFCFCF; border-radius: 10px;"> 
+             <div style="background:#E60000;height:20px; padding-left:5px; padding-top:5px; border-radius: 5px;" ><span style="font-weight:bold;color:#fff;">Recently Created / Updated Cases</span><a class="viewmoreLink" onclick="openPrimaryTab();return false" >View More</a> </div>
+             <div style="overflow-y:scroll; height:140px;">
+             <apex:dataTable value="{!returnValuesForRecentCreatedUpdatedCases}" var="v" width="100%" id="dt1" styleClass="list" headerClass="headerRow" rows="5">
+                  <apex:column headerValue="Case Title" width="200">
+                      <apex:outputLink onclick="goToLink('{!v}');return false" style="color:#005C99; text-decoration: none;">{!caseMapRecent[v].Subject}</apex:outputLink>
+                  </apex:column>
+                   <apex:column headerValue="Risk" width="40">
+                        <apex:image url="{!$Resource.HUB_Green}" rendered="{!If(caseMapRecent[v].HUB_Risk__c == 'Green',true, false)}" height="14" width="14" />
+                        <apex:image url="{!$Resource.HUB_Red}" rendered="{!If(caseMapRecent[v].HUB_Risk__c == 'Red',true, false)}" height="14" width="14" />
+                        <apex:image url="{!$Resource.HUB_Yellow}" rendered="{!If(caseMapRecent[v].HUB_Risk__c == 'Yellow',true, false)}" height="14" width="14" />
+                   </apex:column> 
+                   
+                  <apex:column headerValue="Type" value="{!caseMapRecent[v].HUB_Risk_Type__c }" width="80">
+                  </apex:column>
+                  <apex:column headerValue="Priority" value="{!caseMapRecent[v].Priority}" width="80"/>
+                   <apex:column headerValue="Last Modified" value=" {!DATEVALUE(caseMapRecent[v].LastModifiedDate)}" />
+            </apex:dataTable>
+            </div>
+        </div> <br /> 
+         <div style="background:#fff; border:1px solid #CFCFCF; border-radius: 10px;">
+            <div style="background:#E60000;height:20px; padding-left:5px; padding-top:5px; border-radius: 5px;" ><span style="font-weight:bold;color:#fff">Most Active Cases in last 7 days</span><a class="viewmoreLink" onclick="openPrimaryTab();return false" >View More</a> </div>
+            <div style="overflow-y:scroll; height:140px;">
+            <apex:dataTable value="{!returnValuesForMostActiveCases}" var="v" width="100%" id="dt2" styleClass="list" headerClass="headerRow" rows="5" >
+                  <apex:column headerValue="Case Title" width="200">
+                      <apex:outputLink onclick="goToLink('{!v}');return false" style="color:#005C99; text-decoration: none;">{!caseMapMostActive[v].Subject}</apex:outputLink>
+                  </apex:column>
+                  <apex:column headerValue="Risk" width="40">
+                        <apex:image url="{!$Resource.HUB_Green}" rendered="{!If(caseMapMostActive[v].HUB_Risk__c == 'Green',true, false)}" height="14" width="14" />
+                        <apex:image url="{!$Resource.HUB_Red}" rendered="{!If(caseMapMostActive[v].HUB_Risk__c == 'Red',true, false)}" height="14" width="14" />
+                        <apex:image url="{!$Resource.HUB_Yellow}" rendered="{!If(caseMapMostActive[v].HUB_Risk__c == 'Yellow',true, false)}" height="14" width="14" />
+                   </apex:column>
+                  <apex:column headerValue="Type" value="{!caseMapMostActive[v].HUB_Risk_Type__c }" width="80">
+                  </apex:column>
+                  <apex:column headerValue="Priority" value="{!caseMapMostActive[v].Priority}" width="80"/>
+                   <apex:column headerValue="Last Modified" value=" {!DATEVALUE(caseMapMostActive[v].LastModifiedDate)}" width="100"/>
+    
+            </apex:dataTable>
+            </div>
+         </div><br />
+          
+          <div style="background:#fff; border:1px solid #CFCFCF; border-radius: 10px;">
+         <div style="background:#E60000;height:20px; padding-left:5px; padding-top:5px; border-radius: 5px;" ><span style="font-weight:bold;color:#fff;">Recently Created / Updated Learnings</span><a class="viewmoreLink" onclick="gotoLearning();return false" >View More</a> </div>
+         <div style="overflow-y: scroll; height:140px;">
+         <apex:dataTable styleClass="list" value="{!NewUpdatedBestPractice}" var="v"  width="100%" id="dt4" headerClass="headerRow" rows="5">
+              <apex:column headerValue="Learning Title" style="width:200px" >
+                  <apex:outputLink onclick="goToLink('{!v.Id}');return false" style="color:#005C99; text-decoration: none;">{!v.Title__c}</apex:outputLink>
+              </apex:column>
+              <apex:column headerValue="Rating" value="{!IF(v.Total_Vote__c != null,v.Average__c ,0)} ({!IF(v.Total_Vote__c != null,v.Total_Vote__c,'0')} votes)" width="90"/> 
+              <apex:column headerValue="Learning Type" value=" {!v.Learning_Type__c }" width="100"/> 
+             <apex:column headerValue="Date Created" value=" {!DATEVALUE(v.CreatedDate)}" width="80"/>
+    
+        </apex:dataTable>
+        </div>
+         </div> <br />
+         
+         <div style="background:#fff; border:1px solid #CFCFCF; border-radius: 10px;">
+         <div style="background:#E60000;height:20px; padding-left:5px; padding-top:5px; border-radius: 5px;" ><span style="font-weight:bold;color:#fff;">Highest Rated Learnings in last 90 days</span><a class="viewmoreLink" onclick="gotoLearning();return false" >View More</a> </div>
+         <div style="overflow-y: scroll; height:140px;">
+         <apex:dataTable styleClass="list" value="{!HighlyRatedLearning}" var="v"  width="100%" id="dt5" headerClass="headerRow" rows="5">
+              <apex:column headerValue="Learning Title" style="width:200px" >
+                  <apex:outputLink onclick="goToLink('{!v.Id}');return false" style="color:#005C99; text-decoration: none;">{!v.Title__c}</apex:outputLink>
+              </apex:column>
+              <apex:column headerValue="Rating" value="{!IF(v.Total_Vote__c != null,v.Average__c ,0)} ({!IF(v.Total_Vote__c != null,v.Total_Vote__c,'0')} votes)" width="90"/> 
+              <apex:column headerValue="Learning Type" value=" {!v.Learning_Type__c }" width="100"/> 
+             <apex:column headerValue="Date Created" value=" {!DATEVALUE(v.CreatedDate)}" width="80"/> 
+    
+        </apex:dataTable> 
+        </div>
+         </div> <br />
+         
+         <div style="background:#fff; border:1px solid #CFCFCF; border-radius: 10px;">
+            <div style="background:#E60000;height:20px; padding-left:5px; padding-top:5px; border-radius: 5px;" ><span style="font-weight:bold;color:#fff;float:left;">New Knowledge Base Articles</span><a class="viewmoreLink" onclick="gotoKnowledge();return false" >View More</a></div>
+           <div style="overflow-y:scroll; height:140px;">
+           <apex:dataTable value="{!NewCreatedArticles}" var="v"  width="100%" id="dt3" styleClass="list" headerClass="headerRow" rows="5">
+             <apex:column headerValue="Article Title" style="width:200px" >
+                  <apex:outputLink onclick="goToLink('{!v.KnowledgeArticleId}');return false" target="_blank" style="color:#005C99; text-decoration: none;">{!v.Title}</apex:outputLink>
+              </apex:column>
+             <apex:column headerValue="Published Date" value=" {!DATEVALUE(v.FirstPublishedDate)}" width="100"/>
+            
+            </apex:dataTable>
+            </div>
+         </div> <br />
+         
+         <div style="background:#fff; border:1px solid #CFCFCF; border-radius: 10px;">
+            <div style="background:#E60000;height:20px; padding-left:5px; padding-top:5px; border-radius: 5px;" ><span style="font-weight:bold;color:#fff;float:left;">Content Opportunities - Next 3 Months</span><a class="viewmoreLink" onclick="gotoContent();return false" >View More</a></div>
+           <div style="overflow-y:scroll; height:140px;">
+           <apex:dataTable value="{!ContentOpportunities}" var="v"  width="100%" id="dt6" styleClass="list" headerClass="headerRow">
+             <apex:column headerValue="Content Title" style="width:200px" >
+                  <apex:outputLink onclick="goToContentLink('{!v.WhatId}','{!JSENCODE(contentOppMap[v.WhatId].Title__c)}');return false" target="_blank" style="color:#005C99; text-decoration: none;">{!contentOppMap[v.WhatId].Title__c} </apex:outputLink>
+              </apex:column>
+              
+             <apex:column headerValue="Content Type" value="{!contentOppMap[v.WhatId].contentType__c}" width="100"/>
+             <apex:column headerValue="Relevant Until" value=" {!DATEVALUE(Text(v.StartDateTime))} - {!DATEVALUE(Text(v.EndDateTime))}" width="100"/>
+            </apex:dataTable>
+            </div>
+         </div>  
+         
+        
+    </div>      
+    
+            
+                   
+    
+  </div>
+  </div>
+   <apex:actionPoller interval="60" action="{!refreshPages}" rerender="dt1,dt2,dt3,dt4,pbs1,dt5,dt6"/>
+  </apex:form>
+</apex:page>

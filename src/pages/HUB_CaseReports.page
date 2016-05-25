@@ -1,0 +1,111 @@
+<apex:page standardController="Case" extensions="HUB_CaseReportsController" readOnly="true" tabStyle="HUB_URL__c">
+<script>
+setFocus = function() { return; }
+</script>
+<style>
+.header{
+    padding-bottom:10px;
+}
+</style>
+  <apex:form id="formId">
+  <br></br><br></br>
+  <b><font size="4">Nexus Market Reports</font></b><br></br><br></br>
+  
+  <b>Date Range</b> <br></br><br></br>
+   From:  <apex:inputText value="{!fromDate}" size="10" id="frmDate" onfocus="DatePicker.pickDate(false, this , false);" />     &nbsp;&nbsp;To: <apex:inputText value="{!toDate}" size="10" id="tDate" onfocus="DatePicker.pickDate(false, this , false);" /> 
+  
+    User Market: <apex:selectList id="userMarket" value="{!userMarketFilter}" size="1">
+        
+    <apex:selectOptions value="{!UserMarkets}"/>
+ </apex:selectList> &nbsp;&nbsp;&nbsp;&nbsp;
+ <apex:commandButton value="Run Report" action="{!showResults}" status="filterStatus" reRender="formId,showMsg" />
+    <apex:actionStatus id="filterStatus">
+                            <apex:facet name="start">
+                                <img src="/img/loading.gif" title="Please Wait..." />
+                            </apex:facet>
+                        </apex:actionStatus>
+    <br></br><br></br>
+    <apex:pagemessages id="showMsg"></apex:pagemessages> <br/><br/>
+    
+      <apex:pageBlock id="pb2" title="User Detail :">
+        <apex:outputPanel rendered="{!showUserDetail}">
+           <table width="100%">
+               <tr>
+                <td>
+                <apex:outputLabel value="Total Logins:" style="font-weight:bold"/>
+                &nbsp;&nbsp;
+                  {!totalLoginsAll}
+                </td>
+                <td>
+                <apex:outputLabel value="Total Users:" style="font-weight:bold"/>
+                &nbsp;&nbsp;
+                 {!totalUsersAll} ({!consoleUsers.size} Console /  {!communityUsers.size} Community)
+                </td>
+                <td>
+                <apex:outputLabel value="Total Inactive Users:" style="font-weight:bold"/>
+                &nbsp;&nbsp;
+                {!totalInActiveUsersAll} ({!percentageOfUsersInactive}%)
+                </td>
+                <td>
+                <apex:outputLabel value="Total Active Users:" style="font-weight:bold"/>
+                &nbsp;&nbsp;
+                {!totalActiveUsersAll}  ({!percentageOfUsersActive}%)
+                </td>
+               </tr>
+              </table> 
+        </apex:outputPanel>
+      </apex:pageBlock>
+      <apex:pageBlock id="pb1" title="Active User Detail:">
+      <apex:pageBlockSection columns="3">
+        <apex:pageBlockSection columns="1" title="% Read Cases" collapsible="false">
+             {!percentageOfUsersWhoReadCases}%
+        </apex:pageBlockSection>
+        <apex:pageBlockSection columns="1" title="% Contribute to Cases" collapsible="false">
+           {!percentageOfUsersWhoContributeToCases}%
+        </apex:pageBlockSection>
+        <apex:pageBlockSection columns="1" title="% Create Cases" collapsible="false">
+          {!percentageOfUsersWhoCreateCases}%
+        </apex:pageBlockSection>
+        
+      </apex:pageBlockSection>
+      
+      </apex:pageBlock>
+      <apex:pageBlock >
+        <apex:pageBlockSection columns="1" title="Unique Users: Details" collapsible="false">
+        <apex:dataTable value="{!userDetailList}" var="v" rendered="{!NOT(ISNULL(userDetailList)) && userDetailList.size!=0}">
+          
+           
+       <apex:column id="UserName" width="200" headerClass="header">
+         <apex:facet name="header">   
+           <apex:commandLink action="{!showResults}" value="User Name{!IF(sortExpression=='name',IF(sortDirection='ASC','▼','▲'),'')}" reRender="formId" style="color:#005C99; text-decoration: none;">
+             <apex:param value="Name" name="column" assignTo="{!sortExpression}" ></apex:param>
+           </apex:commandLink>
+         </apex:facet>
+         <apex:outputLink value="/{!v.Id}" target="_blank" style="color:#005C99; text-decoration: none;">{!v.Name}</apex:outputLink>
+       </apex:column>
+       
+        <apex:column value="{!v.HUB_Country__c}" width="200" id="UserMarket" headerClass="header">
+         <apex:facet name="header">
+           <apex:commandLink action="{!showResults}" value="User Market{!IF(sortExpression=='HUB_Country__c',IF(sortDirection='ASC','▼','▲'),'')}" reRender="formId" style="color:#005C99; text-decoration: none;">
+             <apex:param value="HUB_Country__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+           </apex:commandLink>
+         </apex:facet>
+       </apex:column>
+       
+       <apex:column value="{!v.LastLoginDate}" width="200" id="UserLastLogin" headerClass="header">
+         <apex:facet name="header">
+           <apex:commandLink action="{!showResults}" value="User Last Login{!IF(sortExpression=='LastLoginDate',IF(sortDirection='ASC','▼','▲'),'')}" reRender="formId" style="color:#005C99; text-decoration: none;">
+             <apex:param value="LastLoginDate" name="column" assignTo="{!sortExpression}" ></apex:param>
+           </apex:commandLink>
+         </apex:facet>
+       </apex:column>
+         
+          <apex:column headerValue="Total Logins" value=" {!mapForTotalLogins[v.id]}" width="200" headerClass="header"/>
+          <apex:column headerValue="Cases Created" value=" {!mapForCasesCreated[v.id]}" width="200" headerClass="header"/>
+          <apex:column headerValue="Contributions to Cases" value=" {!mapForContributionsToCases[v.id]}" width="200" headerClass="header"/>
+        </apex:dataTable>
+     </apex:pageBlockSection>
+     
+      </apex:pageBlock>
+  </apex:form>
+</apex:page>

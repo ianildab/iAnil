@@ -1,0 +1,208 @@
+<apex:page controller="STMAddStakeholdersController"
+    sidebar="false" showHeader="false">
+    <apex:form >
+        <head>
+            <style>
+                body 
+                {
+                    padding: 10px;
+                    background-color: #F8F8F8;
+                    color: #232323;
+                    font-family: arial, helvetica, sans-serif;
+                }
+                .bPageBlock.brandSecondaryBrd.secondaryPalette
+                {
+                    border-top:0px;
+                    border-bottom:0px;
+                    border-left:0px;
+                    border-right:0px;
+                }
+                .bPageBlock
+                {
+                    border-top:0px;
+                    border-bottom:0px;
+                    border-left:0px;
+                    border-right:0px;
+                }
+                body .bEditBlock .pbBottomButtons, body .apexp .bPageBlock.apexDefaultPageBlock .pbBottomButtons
+                {
+                    margin-top: 0px;
+                    border-top: 0px;
+                }
+            </style>
+            
+            <apex:includeScript id="JQuery" value="{!$Resource.STMJQuery}" />
+            <script>
+                  var contactIds = [];                  
+                  var issueId = "{!$CurrentPage.parameters.id}";
+                  window.$j = jQuery.noConflict();
+                  function CloseAndRefresh(){
+                      process();
+                  }
+                 
+                  function selectAll(){
+                        if($j(':checkbox').size()-1 == $j(':checkbox:checked').size()) {
+                           $j(':checkbox').attr('checked', false);
+                        } else {
+                           $j(':checkbox').attr('checked', true);
+                        }
+                  }
+                  
+                  function saveSelection() {
+                      selectedIds = contactIds.join('');
+                      $j(':checkbox').each(function(){
+                          if (this.checked) {
+                              if (selectedIds.indexOf(this.id) == -1) {
+                                  contactIds.push(this.id);
+                                  selectedIds = selectedIds + this.id;
+                              }
+                          } else {
+                              if (selectedIds.indexOf(this.id) != -1) {
+                                  for (i=0; i < contactIds.length; i++) {
+                                      if (contactIds[i] == this.id) {
+                                          contactIds.splice(i, 1);
+                                          selectedIds = contactIds.join('');
+                                      }
+                                  }
+                              }
+                          }
+                      });
+                  }
+                  
+                  function restoreSelection() {
+                      contIds = contactIds.join('');
+                      i = 0;
+                      $j(':checkbox').each(function(){ if(this.id !== ''){  if(contIds.indexOf(this.id) != -1){this.checked=true;};/*console.log(i++);*/ }});
+                      
+                  }
+                  
+                  function addStakeholders() {
+                      saveSelection();
+                      ids = contactIds.join(':');
+                      /*console.log(ids);*/
+                      STMAddStakeholdersController.addStakeholders(ids,issueId,
+                          function(result, event){
+                          if (event.status) {} },
+                       {escape:true});
+                  }
+                  
+                  function Search(){
+                      saveSelection();
+                      doSearch(
+                          document.getElementById("firstName").value,
+                          document.getElementById("lastName").value,
+                          document.getElementById("accountName").value
+                      ); 
+                  }
+                  
+                  function checkIeVersion(){
+                    var undef,
+                        v = 3,
+                        div = document.createElement('div'),
+                        all = div.getElementsByTagName('i');
+                    while (
+                        div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
+                        all[0]
+                    );
+                    return v > 4 ? v : undef;
+                 }
+           </script>
+        </head>
+        <body>
+            <table width="100%" border="0">
+                <tr>
+                    <td width="200" valign="top">
+                            <table cellpadding="2" cellspacing="2">
+                                <tr>
+                                    <td style="font-weight: bold;">First Name<br />
+                                     <input type="text" id="firstName"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold;">Last Name<br /> 
+                                    <input type="text" id="lastName"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold;">Account<br /> 
+                                    <input type="text" id="accountName"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                         <apex:actionFunction name="doSearch" action="{!runSearch}" rerender="results" oncomplete="resoreSelection();">
+                                            <apex:param name="firstName" value="" />
+                                            <apex:param name="lastName" value="" />
+                                            <apex:param name="accountName" value="" />
+                                        </apex:actionFunction>
+                                        <button type="button" class="searchBtn" id="searchButton" onClick="Search();saveSelection();">Search</button>
+                                        <!-- <button type="button" class="searchBtn" id="cleanBtn" onClick="">Clean</button> -->
+                                    </td>
+                                </tr>
+                            </table>
+                      </td>
+                    <td valign="top">
+                    
+            <apex:pageBlock mode="edit" id="results">
+                <apex:pageBlockButtons location="bottom">
+                    <apex:commandButton onClick="addStakeholders();" oncomplete="
+                      /* var ie = checkIeVersion();
+                       if (ie == 8 || ie == 9) {
+                            window.close();
+                       } else {*/
+                            window.opener.location.href='/'+issueId;top.close();
+                       /*}*/" value="Add stakeholders"/>
+                </apex:pageBlockButtons>
+                <apex:pageBlockTable value="{!contacts}" var="stkhldr">
+                  <apex:column width="25px">
+                      <apex:facet name="header">
+                          <input type="checkbox" onClick="selectAll();" />
+                      </apex:facet>
+                      <input type="checkbox" id="{!stkhldr.Id}" onClick="saveSelection();" />
+                  </apex:column>
+
+                  <apex:column >
+                    <apex:facet name="header">
+                      <apex:commandLink value="First Name"/>
+                    </apex:facet>
+                    <apex:outputField value="{!stkhldr.firstName}" />
+                  </apex:column>
+                                
+                  <apex:column >
+                    <apex:facet name="header">
+                        <apex:commandLink value="Last Name"/>
+                    </apex:facet>
+                    <apex:outputField value="{!stkhldr.lastName}" />
+                  </apex:column>
+                                
+                  <apex:column >
+                    <apex:facet name="header">
+                      <apex:commandLink value="Account"/>
+                    </apex:facet>
+                    <apex:outputField value="{!stkhldr.account.name}" />
+                  </apex:column>
+                 <!--                 
+                  <apex:column >
+                    <apex:facet name="header">
+                      <apex:commandLink value="IsPersonAccount"/>
+                    </apex:facet>
+                  <apex:outputField value="{!stkhldr.IsPersonAccount}" /> 
+                  </apex:column>
+                  -->
+                 </apex:pageBlockTable>
+                    <apex:panelGrid columns="7">
+                        <apex:commandButton status="fetchStatus" reRender="results" value="|<" action="{!first}" disabled="{!!hasPrevious}" title="First Page" onClick="saveSelection();" oncomplete="restoreSelection()"/>
+                        <apex:commandButton status="fetchStatus" reRender="results" value="<" action="{!previous}" disabled="{!!hasPrevious}" title="Previous Page" onClick="saveSelection();" oncomplete="restoreSelection()"/>
+                        <apex:commandButton status="fetchStatus" reRender="results" value=">" action="{!next}" disabled="{!!hasNext}" title="Next Page" onClick="saveSelection();" oncomplete="restoreSelection()"/>
+                        <apex:commandButton status="fetchStatus" reRender="results" value=">|" action="{!last}" disabled="{!!hasNext}" title="Last Page" onClick="saveSelection();" oncomplete="restoreSelection()" />
+                        <apex:outputText >{!(pageNumber * size)+1-size}-{!IF((pageNumber * size)>noOfRecords, noOfRecords,(pageNumber * size))} of {!noOfRecords}</apex:outputText>
+                        <apex:outputPanel style="color:#4AA02C;font-weight:bold">
+                            <apex:actionStatus id="fetchStatus" startText="Fetching..." stopText=""/>
+                        </apex:outputPanel> 
+                    </apex:panelGrid>
+                  </apex:pageBlock></td>
+                </tr>
+            </table>
+        </body>
+    </apex:form>
+</apex:page>

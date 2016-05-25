@@ -1,0 +1,7 @@
+<apex:page > 
+
+<!--apex:page showHeader="false" applyHtmlTag="false" contentType="text/csv;charset=iso-8859-1" controller="ECICCaseToJsonCsvController">
+  <apex:outputText value="{!HTMLENCODE(csvExport)}" escape="false"/>
+</apex:page-->
+
+</apex:page>

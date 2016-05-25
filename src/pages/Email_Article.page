@@ -1,0 +1,33 @@
+<apex:page standardController="Case">
+<link href="/css/ie_global.css" rel="stylesheet" type="text/css" /> 
+<link href="/css/ie_navigation.css" rel="stylesheet" type="text/css" /> 
+<body bgcolor="#FFFFFF"> 
+<center> 
+<br/> 
+<table width="10%"> 
+<tr> 
+<td align="center"> 
+<span class="moduleTitle">Preparing Solution Email Template... Please Wait</span> 
+</td> 
+</tr> 
+<tr> 
+<td>&nbsp;</td> 
+</tr> 
+<tr> 
+<td align="center"> 
+<img src="/img/waiting_dots.gif" border="0" width="156" height="34" /> 
+</td> 
+</tr> 
+</table> 
+</center> 
+<script type="text/javascript" src="/js/functions.js" /> 
+<script src="/soap/ajax/8.0/connection.js" />
+<script> 
+  function closeMe() {
+    this.window.opener.location.replace('/email/author/emailauthor.jsp?retURL=%2F{!Case.Id}&p3_lkid={!Case.Id}&rtype=003&p2_lkid={!Case.ContactId}&template_id=00XW0000000HquL&new_template=true'); 
+    this.window.close(); 
+  } 
+  setTimeout(closeMe, 1000); 
+</script>
+</body>
+</apex:page>

@@ -1,0 +1,68 @@
+<apex:page standardController="User" extensions="HUB_UserPreferencesController" tabStyle="HUB_URL__c">
+<apex:includeScript value="/support/console/22.0/integration.js"/>
+<script type="text/javascript">
+        function testSetTabTitle() {
+            //Set the current tab's title
+            sforce.console.setTabTitle('Alert Settings');
+        }
+        var pageLoad = window.onload;
+          window.onload = function() {
+                if (pageLoad) {
+                        pageLoad();
+                }
+                  testSetTabTitle();
+          }
+    </script>
+ <apex:sectionHeader title="Alert Email Notification Settings"/>
+  <apex:form >
+    <apex:pageBlock id="PageBlock" mode="maindetail">
+      <apex:pageBlockSection columns="2">
+        <apex:outputField value="{!currentuser.HUB_Opt_Out__c}" label="All Alert Opt Out"/>
+        <apex:outputField value="{!currentuser.HUB_Receive_Creation_Alert_for_Cases__c}" label="Receive Case Creation Alert for Cases I Create"/>
+      </apex:pageBlockSection>
+      <apex:pageBlockSection columns="2" title=" " collapsible="false">
+          <apex:outputField value="{!currentuser.HUB_Receive_High_Level_fun_Case_Alerts__c}" label="Receive High Level Function Case Alerts"/>
+        <apex:outputField value="{!currentuser.HUB_Function__c}" label="My High Level Function"/>
+        
+        
+      </apex:pageBlockSection>
+      <apex:pageBlockSection columns="2" title=" " collapsible="false">
+      <apex:outputField value="{!currentuser.HUB_Receive_Relevant_Brand_Case_Alerts__c}" />
+      <apex:outputField value="{!currentuser.HUB_Relevant_Brands__c}" label="My Relevant Brands"/>
+      </apex:pageBlockSection>
+      <apex:pageBlockSection columns="2" title=" " collapsible="false">
+      <apex:outputField value="{!currentuser.HUB_Rcv_Weekly_Learning_Summary_mails__c}"/>
+      <apex:outputField value="{!currentuser.HUB_Receive_Content_Digest_Emails__c}"/>
+      </apex:pageBlockSection>
+      <apex:pageBlockSection columns="1" collapsible="false" title="Nexus Primary Market">
+          <apex:outputField value="{!currentuser.HUB_Region__c}"/>
+          <apex:outputField value="{!currentuser.HUB_Group__c}"/>
+          <apex:outputField value="{!currentuser.HUB_Country__c}"/>
+      </apex:pageBlockSection>
+
+      <apex:pageBlockSection columns="2" collapsible="false" title="Nexus Regional Digest Emails">
+          <apex:outputField value="{!currentuser.HUB_Frequency_APAC__c}"/>
+          <apex:outputField value="{!currentuser.HUB_Frequency_EAG__c}" />   
+          <apex:outputField value="{!currentuser.HUB_New_Case_APAC__c}"/>
+          <apex:outputField value="{!currentuser.HUB_New_Case_EAG__c}" />
+          <apex:pageBlockSectionItem /> <apex:pageBlockSectionItem /> 
+          <apex:outputField value="{!currentuser.HUB_Frequency_LAG__c}" />
+          <apex:outputField value="{!currentuser.HUB_Frequency_EG__c}" />
+          <apex:outputField value="{!currentuser.HUB_New_Case_LAG__c}" />
+          <apex:outputField value="{!currentuser.HUB_New_Case_EG__c}" />
+          <apex:pageBlockSectionItem /> <apex:pageBlockSectionItem />
+          <apex:outputField value="{!currentuser.HUB_Frequency_Global__c}"/>
+          <apex:outputField value="{!currentuser.HUB_Frequency_NA__c}" />
+          <apex:outputField value="{!currentuser.HUB_New_Case_Global__c}" />
+          <apex:outputField value="{!currentuser.HUB_New_Case_NA__c}" />
+      </apex:pageBlockSection>
+      <apex:pageBlockSection columns="3" collapsible="false" title="Nexus Additional Market Alerts">
+          <apex:outputField value="{!currentuser.HUB_MarketsObserved1__c}"/>
+          <apex:outputField value="{!currentuser.HUB_MarketsObserved2__c}"/>
+      </apex:pageBlockSection>
+      <apex:pageblockbuttons >
+       <apex:commandButton value="Edit" action="/apex/HUB_UserPreferencesForCommunityUsers" />
+      </apex:pageblockbuttons>
+    </apex:pageBlock>
+  </apex:form>
+</apex:page>

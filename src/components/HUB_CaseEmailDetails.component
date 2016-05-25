@@ -1,0 +1,10 @@
+<apex:component access="global">
+    <apex:attribute name="Case" type="Case" description="case object" />    
+
+<p><b>Case Subject:</b> {!Case.Subject}</p>
+<p><b>Case Description:</b> {!Case.Description}</p>
+<p><b>Created By:</b> {!Case.Createdby.Name}</p>
+<p><b>Case Number:</b> {!Case.CaseNumber}</p>
+<p><b>Priority:</b> {!Case.Priority}</p>
+
+</apex:component>

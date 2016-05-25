@@ -1,0 +1,109 @@
+<apex:page showHeader="false" standardController="STMIssueScore__c" extensions="STMIssueEvolutionMapController">
+ <apex:includeScript id="JQuery" value="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"/> 
+ <apex:includeScript id="googleJSApi" value="https://www.google.com/jsapi" />
+ <apex:includeScript id="jqUI" value="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"/>
+ <apex:includeScript id="CommonJS" value="{!$Resource.SEPCommonJS}"/>
+    <style>
+        .chart 
+        {
+            padding: 50px;
+        }
+        .wrapper
+        {
+        width:100%;   
+        }
+        .table
+        {
+        display:table;   
+        width:100%;
+        }
+        .row
+        {
+        display:table-row;
+        padding:15px;
+        }  
+        .col
+        {
+        vertical-align:top;
+        display:table-cell;
+        margin-left:0px; 
+        //border:1px solid #bebebe;
+        padding:15px;
+        }     
+        .c25
+        {
+        width:      25%; 
+        margin-top: 100px;
+        padding:    0px;
+        }
+        .c50
+        {
+        width:      50%;
+        padding:    0px;
+        }     
+        .c75
+        {
+        width:      75%;
+        padding:    0px;
+        }
+        
+        #header
+        {
+        margin-top:     15px;
+        font:           bold 20px arial, sans-serif;
+        color:          #624AD8;
+        text-align:     center;
+        text-indent:    50px;
+        }
+    </style>
+    
+    <script type="text/javascript">
+    
+    var issueScoreId = "{!$CurrentPage.parameters.id}";
+    
+    
+    google.load('visualization', '1', {packages: ['annotatedtimeline']});
+    
+    function drawVisualization() {
+        STMIssueEvolutionMapController.loadIssueScoreHistories(issueScoreId, 
+        function(result, event){
+            var data = new google.visualization.DataTable();
+            data.addColumn('datetime', 'Date');
+            data.addColumn('number', 'Influence Score');
+            data.addColumn('number', 'Attitude Score');
+            
+            
+            for (var i = 0; i < result.length; i++) {
+               var dateStamp = new Date(result[i].LastIssueScoreModification);
+             //  console.log(dateStamp.getFullYear() + '-'+ dateStamp.getMonth()+ '-'+ dateStamp.getDate()+ '-'+ dateStamp.getHours()+ '-'+ dateStamp.getMinutes()+ '-'+ dateStamp.getSeconds());
+             //  data.addRow([new Date(dateStamp.getFullYear(), dateStamp.getMonth(), dateStamp.getDate(), dateStamp.getHours(), dateStamp.getMinutes(), dateStamp.getSeconds()),
+               data.addRow([dateStamp,
+                                result[i].influenceScore,
+                                result[i].attitudeScore]);
+            }
+            
+            var annotatedtimeline = new google.visualization.AnnotatedTimeLine(
+                document.getElementById('visualization'));
+                annotatedtimeline.draw(data, {'displayAnnotations': true,
+                                           'colors': ['blue', 'red', '#0000bb'],
+                                           'fill': 30,
+                                           'max': 5.0,
+                                           'min': 1.0});
+        }, {escape:true});
+    }
+    google.setOnLoadCallback(drawVisualization);
+  </script>
+<apex:form >
+    <title>{!$Label.scoreEvolutionByIssueScore}</title>
+<div class="wrapper">
+    <div class="table">
+        <div id="header">
+            <h1>{!$Label.scoreEvolutionByIssueScore}</h1>
+        </div>
+        <div class="chart">
+            <div id="visualization" style="width: 1000px; height: 550px;"></div>
+        </div>
+    </div>
+</div>
+</apex:form>
+</apex:page>

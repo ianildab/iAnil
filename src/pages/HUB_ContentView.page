@@ -1,0 +1,91 @@
+<apex:page standardcontroller="HUB_Contents__c" id="Page" extensions="HUB_ContentController" cache="true" >
+<apex:includeScript value="/support/console/22.0/integration.js"/>
+<script type="text/javascript">
+        function testSetTabTitle() {
+            //Set the current tab's title
+            sforce.console.setTabTitle('Content:{!JSENCODE(HUB_Contents__c.Title__c)}');
+        }
+        var pageLoad = window.onload;
+          window.onload = function() {
+                if (pageLoad) {
+                        pageLoad();
+                }
+                  testSetTabTitle();
+          }
+    </script>
+<apex:sectionHeader title="Content" subtitle="{!HUB_Contents__c.name}"/>
+<chatter:feedWithFollowers entityId="{!HUB_Contents__c.Id}" />
+    <apex:form id="myForm">
+        <apex:PageBlock id="PageBlock" mode="maindetail">
+            <apex:pageBlockSection id="defaultId" title="Information" columns="1">
+                <apex:outputField id="titleID" value="{!HUB_Contents__c.Title__c}" /> 
+                <apex:outputField id="descriptionId" value="{!HUB_Contents__c.Description__c}"  />
+                <apex:outputField value="{!HUB_Contents__c.URL__c}"  />  &nbsp;
+            </apex:pageBlockSection>
+             <apex:pageBlockSection columns="2">
+                <apex:outputField value="{!HUB_Contents__c.Source__c}"  />
+                <apex:outputField value="{!HUB_Contents__c.contentType__c}"  />
+                <apex:outputField value="{!HUB_Contents__c.Date__c}"  />
+                <apex:outputField value="{!HUB_Contents__c.End_Date__c}"  />
+                <apex:outputField value="{!HUB_Contents__c.Repeat__c}" /> &nbsp;
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="2">
+                <apex:outputField value="{!HUB_Contents__c.CreatedDate}"  />
+                <apex:outputField value="{!HUB_Contents__c.LastModifiedDate}"  />    
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Repeat Settings" columns="1" id="pageblockRepeat">
+                <apex:pageBlockSectionItem id="repeatItem">
+                    Repeat <apex:outputPanel ><apex:outputField value="{!objContent.Repeat__c}" id="repeat" /></apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem id="frequencyItem">
+                    Frequency <apex:outputPanel ><div id="repeatSection" style="display:{!IF(objContent.Repeat__c,'','none')};">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                            <apex:outputField id="recType"  value="{!objContent.Frequency__c}" />
+                                            </td>
+                                            <td>
+                                                <div id="dailyOptions" style="display:{!IF(frequencyVisibility = 'Daily','','none')};">
+                                                    <apex:outputField value="{!objContent.Daily_Options__c}" />
+                                                    <apex:outputText value=" {!objContent.dailyEveryNDays__c} day(s)"  rendered="{!ShowDailyEvery}"/> 
+                                                    <br />
+                                                    <br />
+                                                </div>
+                                                
+                                                
+                                                <div id="weeklyOptions" style="display:{!IF(frequencyVisibility = 'Weekly','','none')};">
+                                                    Recurs every &nbsp;<apex:outputField style="width:30px;" value="{!objContent.weeklyEveryNWeeks__c}" /> week(s) on &nbsp;
+                                                   <apex:outputField value="{!objContent.Repeat_RepeatOnWeek__c}" /> <br /> <br />
+                                                </div>
+                                                <div id="monthlyOptions"  style="display:{!IF(frequencyVisibility = 'Monthly','','none')};">
+                                                    <apex:outputField value="{!objContent.Monthly_Options__c}" />
+                                                    <apex:outputText value=" {!objContent.monthlyDays__c} of every {!objContent.monthlyEveryNMonths__c} month(s)" id="monthlydays" rendered="{!IF(ShowMonthlyOnThe,false,true)}"/>
+                                                    <apex:outputText rendered="{!ShowMonthlyOnThe}" value=" {!objContent.monthlyNthDay__c} {!objContent.monthlyWeeks__c} of every {!objContent.monthlyEveryNMonths2__c} month(s)"  /> 
+                                                    <br/><br/>
+                                                </div>
+                                                <div id="yearlyOptions"  style="display:{!IF(frequencyVisibility = 'Yearly','','none')};">
+                                                    <apex:outputField value="{!objContent.yearlyOptions__c}" />
+                                                    <apex:outputText rendered="{!IF(ShowYearlyOnThe,false,true)}" value=" {!objContent.yearlyMonth__c} {!objContent.yearlyDay__c}" />
+                                                    <apex:outputText rendered="{!ShowYearlyOnThe}"  value=" {!objContent.yearlyNthDay__c} {!objContent.yearlyNthDay2__c} of {!objContent.yearlyMonth2__c}" />
+                                                    <br/><br/>
+                                                </div>
+                                                <div>
+                                                 <b>Start Date:</b> &nbsp;<apex:outputField value="{!objContent.repeatStartDate__c}"/>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
+                                                 <b>End Date:</b> &nbsp;<apex:outputField value="{!objContent.repeatEndDate__c}"/>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                              </div></apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons location="both">
+               <apex:commandButton value="Edit" action="{!Edit}"/>
+               <apex:commandButton value="Delete" action="{!delete}"/>
+            </apex:pageBlockButtons>
+       </apex:PageBlock>
+</apex:form>
+<apex:relatedList list="Related_Learning__r" />
+<apex:relatedList list="Related_Content__r" />
+</apex:page>

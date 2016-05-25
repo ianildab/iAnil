@@ -1,0 +1,28 @@
+<apex:page sidebar="false">
+  <apex:includeScript value="/support/console/22.0/integration.js"/> 
+<script>
+            function gotoCaseReports() {
+            if (sforce.console.isInConsole()) {
+                    sforce.console.openPrimaryTab(null,'/apex/HUB_CaseReports', true, 'Market Report');
+
+            }else {
+                    if(document.URL.indexOf('{!$Label.HUB_EmailLinkIMCCommunityURL}') > -1){
+                        window.top.location = '{!$Label.HUB_EmailLinkIMCCommunityURL}'+'apex/HUB_CaseReports';
+                    }else{
+                        window.top.location ='/apex/HUB_CaseReports';
+                    }
+                }
+             
+            }
+</script>
+  <apex:form >
+  <apex:pageBlock title="Nexus Reports">
+  
+<ul>
+<li> <apex:outputLink style="color:#005C99; text-decoration: none;" onclick="gotoCaseReports();return false">Market Report</apex:outputLink></li>
+</ul>
+        
+    
+  </apex:pageBlock>
+  </apex:form>
+</apex:page>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sysomos Heartbeat Connect</fullName>
+    <apiAccessLevel>Unrestricted</apiAccessLevel>
+    <description>Connect Salesforce.com to Sysomos&apos; Heartbeat platform.</description>
+    <namespacePrefix>SysomosHB</namespacePrefix>
+    <types>
+        <members>Case.Web_Url__c</members>
+        <members>Contact.Blog_Url__c</members>
+        <members>Contact.Twitter__c</members>
+        <members>Lead.Blog_Url__c</members>
+        <members>Lead.Twitter_Url__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>Sysomos_Heartbeat</members>
+        <name>CustomTab</name>
+    </types>
+    <version>35.0</version>
+</Package>

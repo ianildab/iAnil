@@ -1,0 +1,30 @@
+<apex:page standardController="HUB_Best_Practices__c" extensions="HUB_AddBestPracticeController" tabStyle="HUB_Best_Practices__c" showHeader="true" sidebar="true" cache="true" id="page1">
+
+
+<apex:form >
+<apex:pageBlock id="pageBlock" mode="detail"> 
+    <apex:pageBlockButtons >
+                <apex:commandButton value="Refresh Files"/>
+    </apex:pageBlockButtons>
+   <apex:pageBlockTable value="{!Files}" var="c">
+            
+            <apex:column headerValue="File Name">
+                <apex:outputLink target="_blank" value="/{!c.RelatedRecordId}">{!c.Title}</apex:outputLink>
+            </apex:column>
+            
+            
+            <apex:column headerValue="Thumbnail">
+                <apex:outputLink rendered="{!If(NOT(BEGINS(c.ContentType, 'image/')),true, false)}" value="/sfc/servlet.shepherd/version/download/{!c.RelatedRecordId}?asPdf=false&operationContext=CHATTER" id="theLink">Download</apex:outputLink>
+                
+                
+                <apex:outputLink target="_blank" rendered="{!BEGINS(c.ContentType, 'image/')}" value="/sfc/servlet.shepherd/version/renditionDownload?rendition=THUMB720BY480&versionId={!c.RelatedRecordId}&operationContext=CHATTER">
+                    <img height="30" width="25"  src="/sfc/servlet.shepherd/version/renditionDownload?rendition=THUMB120BY90&versionId={!c.RelatedRecordId}&operationContext=CHATTER" />
+                </apex:outputLink>
+                
+            </apex:column>
+            <apex:column value="{!c.ContentType}" headerValue="File Type"/>    
+            <apex:column value="{!c.CreatedBy.Name}" headerValue="Created By"/>
+   </apex:pageBlockTable>
+ </apex:pageBlock>   
+</apex:form>
+</apex:page>

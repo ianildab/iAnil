@@ -1,0 +1,537 @@
+<apex:component access="global" language="{!lang}" controller="ECICFactSheetController">
+<head>
+    <meta charset="utf-8"/>
+</head>
+<apex:attribute name="obj" description="Current case." type="Case" assignTo="{!parentCase}"/>
+<apex:attribute name="lang" description="Current language" type="String"/>
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word">
+<style>
+    @page {size:portrait;}
+    /*** VF Email Template styles ***/
+    div.section {padding: 5px;}
+    h3 {display: block; width: 100%; margin: 10px 0; float:left; page-break-after: avoid;}
+    .wrapper {width: 600px;}
+    .wrapper {border: 1px solid black; display: block; overflow: hidden; padding: 10px;}
+    .wrapper table {display: inline;}
+    .wrapper table td, .tblcell {padding: 3px;}
+    .lbl, label span {font-weight: bold;}
+    td {width: 300pt;}
+</style>
+    <apex:outputText value="<xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml>" escape="false" />
+    <body>
+        <div class="section">
+        <!-- Case Information Section -->
+            <h3>{!$Label.Case_Info_Section}</h3>
+            <div class="wrapper">
+                <table>
+                    
+                    <tr><!-- Row 1 - Owner - Type -->
+                        <td><apex:outputText value="{!$Label.Case_Owner}: " styleClass="lbl"/>{!obj.Owner.Name}</td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Type.label}: " styleClass="lbl"/><apex:outputField value="{!obj.Type}" lang="{!lang}"/></td>
+                    </tr>
+                    <tr><!-- Row 2 - CaseNumber - Reason -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.CaseNumber.label}: " styleClass="lbl"/>{!obj.CaseNumber}</td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Reason.label}: " styleClass="lbl"/><apex:outputField value="{!obj.Reason}" lang="{!lang}"/></td>
+                    </tr>
+                    <tr><!-- Row 3 - Contact (Email+Phone+Address+ Key Stakeholder) - Category Level 3 -->
+                        <td><apex:outputText value="{!$ObjectType.Contact.label}: " styleClass="lbl"/>{!obj.Contact.Name}<br/>
+                            <apex:outputText rendered="{!NOT(ISBLANK(obj.Contact.Email))}"> <span class="lbl">{!$ObjectType.Contact.fields.Email.label}:</span> {!obj.Contact.Email}<br/></apex:outputText>
+                            <apex:outputText rendered="{!NOT(ISBLANK(obj.Contact.Phone))}"> <span class="lbl">{!$ObjectType.Contact.fields.Phone.label}:</span> {!obj.Contact.Phone}<br/></apex:outputText>
+                            <apex:variable var="showCntctAddress" value="{!NOT(ISBLANK(obj.Contact.Mailing_Streetname1__c)) || NOT(ISBLANK(obj.Contact.Mailing_Municipality__c)) ||  NOT(ISBLANK(obj.Contact.Mailing_Country__c))}"/>
+                            <apex:outputText styleClass="lbl" rendered="{!showCntctAddress}">
+                            <span class="lbl">{!$Label.Address}:</span>
+                            {!obj.Contact.Mailing_Streetname1__c}<br/>
+                            {!obj.Contact.Mailing_Municipality__c}, {!obj.Contact.mailing_administrativearea__c} {!obj.Contact.mailing_postalCode__c}<br/>
+                            {!obj.Contact.Mailing_Country__c}
+                            </apex:outputText><br/>
+                            <apex:outputText rendered="{!NOT(ISBLANK(obj.Contact.Name))}" value="{!$ObjectType.Contact.fields.Key_Stakeholder__c.label}: " styleClass="lbl"/><apex:outputText rendered="{!obj.Contact.Key_Stakeholder__c}" value="&#10003;" escape="false"/><br/>
+                            <apex:outputText rendered="{!NOT(ISBLANK(obj.Contact.Name))}" value="{!$ObjectType.Contact.fields.Key_influencer_Influence__c.label}: " styleClass="lbl"/><apex:outputField value="{!obj.Contact.Key_influencer_Influence__c}" lang="{!lang}"/><br/>
+                        </td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Category_Level3__c.label}: " styleClass="lbl"/><apex:outputField value="{!obj.Category_Level3__c}" lang="{!lang}"/></td>
+                    </tr>
+                    <tr><!-- Row 4 - Account (Website+Phone+Address) - Category Level 4 -->
+                        <td><apex:outputText value="{!$ObjectType.Account.label}: " styleClass="lbl"/>{!obj.Account.Name} <br/>
+                            <apex:outputText rendered="{!NOT(ISBLANK(obj.Account.website))}"><span class="lbl">{!$ObjectType.Account.fields.website.label}:</span> {!obj.Account.website}<br/></apex:outputText>
+                            <apex:outputText rendered="{!NOT(ISBLANK(obj.Account.Phone))}"> <span class="lbl">{!$ObjectType.Account.fields.Phone.label}:</span> {!obj.Account.Phone}<br/></apex:outputText>    
+                            <apex:variable var="showAcntAddress" value="{!NOT(ISBLANK(obj.Account.Shipping_Streetname1__c)) || NOT(ISBLANK(obj.Account.Shipping_Municipality__c)) || NOT(ISBLANK(obj.Account.Shipping_Country__c))}"/>
+                            <apex:outputText styleClass="lbl" rendered="{!showAcntAddress}">
+                            <span class="lbl">{!$Label.Address}:</span>
+                            {!obj.Account.Shipping_Streetname1__c}<br/>
+                            {!obj.Account.Shipping_Municipality__c}, {!obj.Account.shipping_administrativearea__c} {!obj.Account.shipping_postalCode__c}<br/>
+                            {!obj.Account.Shipping_Country__c}
+                            </apex:outputText>
+                        </td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Category_Level4__c.label}: " styleClass="lbl"/><apex:outputField value="{!obj.Category_Level4__c}" lang="{!lang}"/></td>
+                    </tr>
+                    <tr><!-- Row 5 - Channel (Origin) - Status -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Origin.label}: " styleClass="lbl"/><apex:outputField value="{!obj.Origin}" lang="{!lang}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Status.label}: " styleClass="lbl"/><apex:outputField value="{!obj.Status}" lang="{!lang}"/></td>
+                    </tr>
+                    <tr><!-- Row 6 - Sub_Channel__c - Infoline Status (for QC) -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Sub_Channel__c.label}: " styleClass="lbl"/><apex:outputField value="{!obj.Sub_Channel__c}" lang="{!lang}"/></td>
+                        <td><apex:outputPanel rendered="{!LOWER(obj.RecordType.DeveloperName) == 'quality_complaint' || LOWER(obj.RecordType.DeveloperName) == 'simplified_quality_complaint'}">
+                                <apex:outputText value="{!$ObjectType.Case.fields.Infoline_Status__c.label}: " styleClass="lbl"/><apex:outputField value="{!obj.Infoline_Status__c}" lang="{!lang}"/>
+                            </apex:outputPanel></td>
+                    </tr>
+                    <tr><!-- Row 7 - Channel_of_Answer__c - Priority -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Channel_of_Answer__c.label}: " styleClass="lbl"/><apex:outputField value="{!obj.Channel_of_Answer__c}" lang="{!lang}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Priority.label}: " styleClass="lbl"/><apex:outputField value="{!obj.Priority}" lang="{!lang}"/></td>
+                    </tr>
+                    <tr><!-- Row 8 - CreatedDate - PoS_Key_Account__c (INQ + NQC)-->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.CreatedDate.label}: " styleClass="lbl"/>
+                            <apex:outputText value="{0,date,dd'/'MM'/'yyyy hh':'mm}">
+                                <apex:param value="{!obj.CreatedDate}" />
+                            </apex:outputText></td>
+                        <td><apex:outputPanel rendered="{!(LOWER(obj.RecordType.DeveloperName) == 'inquiry' || LOWER(obj.RecordType.DeveloperName) == 'non_quality_complaint')}">
+                                <apex:outputText value="{!$ObjectType.Case.fields.PoS_Key_Account__c.label}: " styleClass="lbl"/><apex:outputField value="{!obj.PoS_Key_Account__r.Name}" lang="{!lang}"/>
+                            </apex:outputPanel></td>
+                    </tr>
+                    <tr><!-- Row 8 - ClosedDate - Region_of_Purchase__c (INQ + NQC) -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.ClosedDate.label}: " styleClass="lbl"/>
+                            <apex:outputText value="{0,date,dd'/'MM'/'yyyy hh':'mm}">
+                                <apex:param value="{!obj.ClosedDate}" />
+                            </apex:outputText></td>
+                        <td><apex:outputPanel rendered="{!(LOWER(obj.RecordType.DeveloperName) == 'inquiry' || LOWER(obj.RecordType.DeveloperName) == 'non_quality_complaint')}">
+                                <apex:outputText value="{!$ObjectType.Case.fields.Region_of_Purchase__c.label}: " styleClass="lbl"/><apex:outputField value="{!obj.Region_of_Purchase__r.Name}" lang="{!lang}"/>
+                            </apex:outputPanel></td>
+                    </tr>
+                    <tr><!-- Row 8 - IMCR_Issue__c - Consumer_Requires_Answer__c (QC or SQC) -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.IMCR_Issue__c.label}: " styleClass="lbl"/><apex:outputText value="&#10003;" escape="false" rendered="{!obj.IMCR_Issue__c}"/></td>
+                        <td><apex:outputPanel rendered="{!(LOWER(obj.RecordType.DeveloperName) == 'quality_complaint' || LOWER(obj.RecordType.DeveloperName) == 'simplified_quality_complaint')}">
+                            <apex:outputText value="{!$ObjectType.Case.fields.Consumer_Requires_Answer__c.label}: " styleClass="lbl"/><apex:outputText value="&#10003;" escape="false" rendered="{!obj.Consumer_Requires_Answer__c}"/>
+                        </apex:outputPanel>
+                        </td>
+                    </tr>
+                    <tr><!-- Row 9 - Potential_Risk__c - Promotion__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Potential_Risk__c.label}: " styleClass="lbl"/><apex:outputText value="{!obj.Potential_Risk__c}" lang="{!lang}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Promotion__c.label}: " styleClass="lbl"/><apex:outputText value="{!obj.Promotion__r.Name}" lang="{!lang}"/></td>
+                    </tr>
+                    <tr><!-- Row 10 - Risk_Type__c - Promotion_channel__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Risk_Type__c.label}: " styleClass="lbl"/><apex:outputField value="{!obj.Risk_Type__c}" lang="{!lang}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Promotion_channel__c.label}: " styleClass="lbl"/><apex:outputText value="{!obj.Promotion_channel__c}" lang="{!lang}"/></td>
+                    </tr>    
+                    <tr><!-- Row 10 - Social_Media_Engagement__c - Outsourcing_Company__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Social_Media_Engagement__c.label}: " styleClass="lbl"/><apex:outputText value="{!obj.Social_Media_Engagement__c}" lang="{!lang}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Outsourcing_Company__c.label}: " styleClass="lbl"/><apex:outputField value="{!obj.Outsourcing_Company__r.Name}" lang="{!lang}"/></td>
+                    </tr>
+                    <tr><!-- Row 11 - Damage_Caused__c - Legacy_Info1__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Damage_Caused__c.label}: " styleClass="lbl"/><apex:outputField value="{!obj.Damage_Caused__c}" lang="{!lang}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Legacy_Info1__c.label}: " styleClass="lbl"/>{!obj.Legacy_Info1__c}</td>
+                    </tr>
+                    <tr><!-- Row 12 - Contacted_the_Insurance_Company__c - Legacy_Info2__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Contacted_the_Insurance_Company__c.label}: " styleClass="lbl"/><apex:outputText value="&#10003;" escape="false" rendered="{!obj.Contacted_the_Insurance_Company__c}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Legacy_Info2__c.label}: " styleClass="lbl"/>{!obj.Legacy_Info2__c}</td>
+                    </tr>
+                    <tr><!-- Row 13 - Relevant_Request__c - Legacy_Info2__c -->
+                        <td><apex:outputPanel rendered="{!(LOWER(obj.RecordType.DeveloperName) == 'inquiry'|| LOWER(obj.RecordType.DeveloperName) == 'non_quality_complaint')}">
+                            <apex:outputText value="{!$ObjectType.Case.fields.Relevant_Request__c.label}: " styleClass="lbl"/><apex:outputText value="&#10003;" escape="false" rendered="{!obj.Relevant_Request__c}"/>
+                        </apex:outputPanel></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Legacy_Info3__c.label}: " styleClass="lbl"/>{!obj.Legacy_Info3__c}</td>
+                    </tr>
+                    <tr><!-- Row 14 - Country_Code__c - Emtpy -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Country_Code__c.label}: " styleClass="lbl"/><apex:outputField value="{!obj.Country_Code__c}" lang="{!lang}"/></td>
+                    </tr>
+                </table>
+            </div>
+
+            <apex:outputPanel rendered="{!NOT(ISBLANK(obj.SuppliedName)) || NOT(ISBLANK(obj.SuppliedEmail)) ||  NOT(ISBLANK(obj.SuppliedPhone)) ||  NOT(ISBLANK(obj.SuppliedBeverage__c)) ||  NOT(ISBLANK(obj.SuppliedFormatPurchase_of_Product__c))}">
+                <!-- Web Information Section -->
+                <h3>{!$Label.Case_Web_Section}</h3>
+                <div class="wrapper">
+                    <table>
+                        <tr><!-- Row 1 - SuppliedEmail - Empty -->
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.SuppliedEmail.label}: " styleclass="lbl"/><apex:outputText value="{!obj.SuppliedEmail}" styleClass="tblcell"/></td>
+                            
+                        </tr>
+                        <tr><!-- Row 2 - SuppliedName - SuppliedPhone -->
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.SuppliedName.label}: " styleclass="lbl"/><apex:outputText value="{!obj.SuppliedName}" styleClass="tblcell"/></td>
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.SuppliedPhone.label}: " styleclass="lbl"/><apex:outputText value="{!obj.SuppliedPhone}" styleClass="tblcell"/></td>
+                        </tr>
+                        <apex:outputPanel rendered="{!(LOWER(obj.RecordType.DeveloperName) == 'simplified_quality_complaint' || LOWER(obj.RecordType.DeveloperName) == 'quality_complaint')}">
+                            <tr><!-- Row 3 - SuppliedBeverage__c - SuppliedFormatPurchase_of_Product__c -->
+                                <td><apex:outputText value="{!$ObjectType.Case.fields.SuppliedBeverage__c.label}: " styleclass="lbl"/><apex:outputText value="{!obj.SuppliedBeverage__c}" styleClass="tblcell"/></td>
+                                <td><apex:outputText value="{!$ObjectType.Case.fields.SuppliedFormatPurchase_of_Product__c.label}: " styleclass="lbl"/><apex:outputText value="{!obj.SuppliedFormatPurchase_of_Product__c}" styleClass="tblcell"/></td>
+                            </tr>
+                        </apex:outputPanel>
+                    </table>
+                </div>
+            </apex:outputPanel>
+                
+                
+            <!-- Description Information Section -->
+            <h3>{!$Label.Desc_Info_Section}</h3>
+            <div class="wrapper">
+                <table width="100%">
+                    <tr><!-- Row 1 - Subject -->
+                        <apex:outputText value="{!$ObjectType.Case.fields.Subject.label}: " styleclass="lbl"/><apex:outputText value="{!obj.Subject}" styleClass="tblcell"></apex:outputText>
+                    </tr>
+                    <tr><!-- Row 2 - Tone -->
+                        <apex:outputText value="{!$ObjectType.Case.fields.Tone__c.label}: " styleclass="lbl"/><apex:outputText value="{!obj.Tone__c}" styleClass="tblcell"></apex:outputText>
+                    </tr>
+                    <tr><!-- Row 3 - Article Exists -->
+                        <apex:outputText value="{!$ObjectType.Case.fields.Article_Exists__c.label}: " styleclass="lbl"/><apex:outputText value="{!obj.Article_Exists__c}" styleClass="tblcell" lang="{!lang}"></apex:outputText>
+                    </tr>
+                    <tr><!-- Row 4 - Description -->
+                        <apex:outputText value="{!$ObjectType.Case.fields.Description.label}: " styleclass="lbl"/><apex:outputField value="{!obj.Description}" styleClass="tblcell"></apex:outputField>
+                    </tr>
+                    <tr><!-- Row 5 - ECICFactSheet_caseComments label -->
+                        <td><apex:outputText value="{!$Label.ECICFactSheet_caseComments}: " styleclass="lbl"/></td>
+                    </tr>
+                        <!-- Row 6 - Case Comments -->
+                    <apex:repeat value="{!caseCommentsAuthors}" var="currcc" rendered="true"> 
+                         <tr>
+                             <u>{!currcc}</u><br/>
+                             <td width="100%">
+                                 {!caseComments[currcc]}<br/><br/>
+                             </td>    
+                         </tr>   
+                    </apex:repeat>
+                </table>
+            </div>
+
+            <!-- Product Information Section -->
+            <h3>{!$Label.Product_Info_Section}</h3>
+            <div class="wrapper">
+                <table>
+                    <!-- Inquiry or Non Quality Complaint -->
+                    <apex:outputPanel rendered="{!(LOWER(obj.RecordType.DeveloperName) == 'inquiry'|| LOWER(obj.RecordType.DeveloperName) == 'non_quality_complaint')}">
+                        <tr>
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.Beverage__c.label}: " styleClass="lbl"/>{!obj.Beverage__r.Name}</td>
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.Package__c.label}: " styleClass="lbl"/>{!obj.Package__r.Name}</td>
+                        </tr>
+                    </apex:outputPanel>
+
+                    <!-- Quality Complaint -->
+                    <apex:outputPanel rendered="{!LOWER(obj.RecordType.DeveloperName) == 'quality_complaint'}">
+                        <tr><!-- Row 1 - Product_Description__c - Production_Date__c -->
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.Product__c.label}: " styleClass="lbl"/>{!obj.Product__r.Product_Description__c}</td>
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.Production_Date__c.label}: " styleClass="lbl"/>
+                                <apex:outputText value="{0,date,dd'/'MM'/'yyyy }">
+                                    <apex:param value="{!obj.Production_Date__c}" />
+                                </apex:outputText></td>
+                        </tr>
+                        <tr><!-- Row 2 - BBE_Date__c - Product_Age__c -->
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.BBE_Date__c.label}: " styleClass="lbl"/>
+                                <apex:outputText value="{0,date,dd'/'MM'/'yyyy }">
+                                    <apex:param value="{!obj.BBE_Date__c}" />
+                                </apex:outputText></td>
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.Product_Age__c.label}: " styleClass="lbl"/>
+                                <apex:outputText value="{0,number}">
+                                    <apex:param value="{!obj.Product_Age__c}" />
+                                </apex:outputText></td>
+                        </tr>
+                        <tr><!-- Row 3 Production_Code__c - Bottler__c -->
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.Production_Code__c.label}: " styleClass="lbl"/>{!obj.Production_Code__c}</td>
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.Bottler__c.label}: " styleClass="lbl"/><apex:outputText value="{!obj.Bottler__r.Name}" /></td>
+                        </tr>
+                        <tr><!-- Row 4 - Production_Line__c - Plant__c -->
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.Production_Line__c.label}: " styleClass="lbl"/>{!obj.Production_Line__r.Name}</td>
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.Plant__c.label}: " styleClass="lbl"/>{!obj.Plant__r.Name}</td>
+                        </tr>
+                        <tr><!-- Row 5 - Package_Type__c - Size__c -->
+                            <td><apex:outputText value="{!$ObjectType.Product__c.fields.Package_Type__c.label}: " styleClass="lbl"/>{!obj.Product__r.Package_Type__c}</td>
+                            <td><apex:outputText value="{!$ObjectType.Product__c.fields.Size__c.label}: " styleClass="lbl"/>{!obj.Product__r.Size__c}</td>
+                        </tr>
+                        <tr><!-- Row 6 - Flavour__c -->
+                            <td><apex:outputText value="{!$ObjectType.Product__c.fields.Flavour__c.label}: " styleClass="lbl"/>{!obj.Product__r.Flavour__c}</td>
+                        </tr>
+                    </apex:outputPanel>
+
+                    <!-- Simplified Quality Complaint -->
+                    <apex:outputPanel rendered="{!LOWER(obj.RecordType.DeveloperName) == 'simplified_quality_complaint'}">
+                        <tr><!-- Row 1 - Beverage__c - Production_Date__c -->
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.Beverage__c.label}: " styleClass="lbl"/>{!obj.Beverage__r.Name}</td>
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.Production_Date__c.label}: " styleClass="lbl"/>
+                                <apex:outputText value="{0,date,dd'/'MM'/'yyyy }">
+                                    <apex:param value="{!obj.Production_Date__c}" />
+                                </apex:outputText></td>
+                        </tr>
+                        <tr><!-- Row 2 - Package - Product_Age__c -->
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.Package__c.label}: " styleClass="lbl"/>{!obj.Package__r.Name}</td>
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.Product_Age__c.label}: " styleClass="lbl"/>
+                                <apex:outputText value="{0,number}">
+                                    <apex:param value="{!obj.Product_Age__c}" />
+                                </apex:outputText></td>
+                        </tr>
+                        <tr><!-- Row 3 - Pack_Type__c - Bottler__c -->
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.Pack_Type__c.label}: " styleClass="lbl"/><apex:outputText value="{!obj.Pack_Type__c}" lang="{!lang}"/></td>
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.Bottler__c.label}: " styleClass="lbl"/><apex:outputText value="{!obj.Bottler__r.Name}" /></td>
+                        </tr>
+                        <tr><!-- Row 4 - BBE_Date__c - Plant__c -->
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.BBE_Date__c.label}: " styleClass="lbl"/>
+                                <apex:outputText value="{0,date,dd'/'MM'/'yyyy }">
+                                    <apex:param value="{!obj.BBE_Date__c}" />
+                                </apex:outputText></td>
+                            
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.Plant__c.label}: " styleClass="lbl"/>{!obj.Plant__r.Name}</td>
+                        </tr>
+                        <tr><!-- Row 5 - Production_Code__c - EMPTY -->
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.Production_Code__c.label}: " styleClass="lbl"/>{!obj.Production_Code__c}</td>
+                        </tr>
+                        <tr><!-- Row 6 - Production_Line__c - EMPTY -->
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.Production_Line__c.label}: " styleClass="lbl"/>{!obj.Production_Line__r.Name}</td>
+                        </tr>
+                    </apex:outputPanel>
+                </table>
+        </div>
+
+        <!-- Gift / Compensation Section -->
+        <h3>{!$ObjectType.Case.fields.Gift_Compensation__c.label}</h3>
+        <div class="wrapper">
+            <table>
+                <tr><!-- Row 1 - Gift_Compensation__c - Product_Unit_Price__c -->
+                    <td><apex:outputText value="{!$ObjectType.Case.fields.Gift_Compensation__c.label}: " styleClass="lbl"/><apex:outputText value="&#10003;" escape="false" rendered="{!obj.Gift_Compensation__c}"/></td>
+                    <td><apex:outputText value="{!$ObjectType.Case.fields.Product_Unit_Price__c.label}: " styleClass="lbl"/>
+                        <apex:outputText value="{0,number}">
+                            <apex:param value="{!obj.Product_Unit_Price__c}" />
+                        </apex:outputText></td>
+                </tr>
+                <tr><!-- Row 2 - Type_of_Gift__c - No_of_Packs__c -->
+                    <td><apex:outputText value="{!$ObjectType.Case.fields.Type_of_Gift__c.label}: " styleClass="lbl"/>{!obj.Type_of_Gift__c}</td>
+                    <td><apex:outputText value="{!$ObjectType.Case.fields.No_of_Packs__c.label}: " styleClass="lbl"/>
+                        <apex:outputText value="{0,number}">
+                            <apex:param value="{!obj.No_of_Packs__c}" />
+                        </apex:outputText></td>
+                </tr>
+                <tr><!-- Row 3 - Replacement_Date__c - Value_of_Vouchers__c -->
+                    <td><apex:outputText value="{!$ObjectType.Case.fields.Replacement_Date__c.label}: " styleClass="lbl"/>
+                        <apex:outputText value="{0,date,dd'/'MM'/'yyyy }">
+                            <apex:param value="{!obj.Replacement_Date__c}" />
+                        </apex:outputText></td>
+                    <td><apex:outputText value="{!$ObjectType.Case.fields.Value_of_Vouchers__c.label}: " styleClass="lbl"/>
+                        <apex:outputText value="{0,number}">
+                            <apex:param value="{!obj.Value_of_Vouchers__c}" />
+                        </apex:outputText></td>
+                </tr>
+                <tr><!-- Row 4 - Empty - No_1Euro_vouchers__c -->
+                    <td></td>
+                    <td><apex:outputText value="{!$ObjectType.Case.fields.No_1Euro_vouchers__c.label}: " styleClass="lbl"/>
+                        <apex:outputText value="{0,number}">
+                            <apex:param value="{!obj.No_1Euro_vouchers__c}" />
+                        </apex:outputText></td>
+                </tr>
+                <tr><!-- Row 5 - Empty - No_2Euro_vouchers__c -->
+                    <td></td>
+                    <td><apex:outputText value="{!$ObjectType.Case.fields.No_2Euro_vouchers__c.label}: " styleClass="lbl"/>
+                        <apex:outputText value="{0,number}">
+                            <apex:param value="{!obj.No_2Euro_vouchers__c}" />
+                        </apex:outputText></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Quality Complaint and Simplified Quality Complaint Sections -->
+        <apex:outputPanel rendered="{!LOWER(obj.RecordType.DeveloperName) == 'quality_complaint' || LOWER(obj.RecordType.DeveloperName) == 'simplified_quality_complaint'}">
+            
+            <!-- Consumer Sample Information Section -->
+            <h3>{!$Label.Consumer_Smpl_Info_Section}</h3>
+            <div class="wrapper">
+                <table>
+                    <tr><!-- Row 1 - Content_Available__c - Date_of_Purchase__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Content_Available__c.label}: " styleClass="lbl"/>
+                            <apex:outputText value="&#10003;" escape="false" rendered="{!obj.Content_Available__c}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Date_of_Purchase__c.label}: " styleClass="lbl"/>
+                            <apex:outputText value="{0,date,dd'/'MM'/'yyyy}">
+                                <apex:param value="{!obj.Date_of_Purchase__c}"/>
+                            </apex:outputText></td>
+                    </tr>
+                    <tr><!-- Row 2 - Sample_Collected__c - Point_Of_Sale__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Sample_Collected__c.label}: " styleClass="lbl"/>
+                            <apex:outputText value="&#10003;" escape="false" rendered="{!obj.Sample_Collected__c}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Point_Of_Sale__c.label}: " styleClass="lbl"/>{!obj.Point_Of_Sale__r.Name}</td>
+                    </tr>
+                    <tr><!-- Row 3 - Sample_Collector__c - PoS_Key_Account__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Sample_Collector__c.label}: " styleClass="lbl"/><apex:outputField value="{!obj.Sample_Collector__c}" lang="{!lang}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.PoS_Key_Account__c.label}: " styleClass="lbl"/>{!obj.Pos_key_account__r.Name}</td>
+                    </tr>
+                    <tr><!-- Row 4 - Package_Available__c - Place_of_Purchase__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Package_Available__c.label}: " styleClass="lbl"/>
+                            <apex:outputText value="&#10003;" escape="false" rendered="{!obj.Package_Available__c}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Place_of_Purchase__c.label}:" styleClass="lbl"/>{!obj.Place_of_Purchase__c}</td>
+                    </tr>
+                    <tr><!-- Row 5 - Package_Closed__c - Region_of_Purchase__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Package_Closed__c.label}: " styleClass="lbl"/>
+                            <apex:outputText value="&#10003;" escape="false" rendered="{!obj.Package_Closed__c}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Region_of_Purchase__c.label}:" styleClass="lbl"/>{!obj.Region_of_Purchase__r.Name}</td>
+                    </tr>
+                    <tr><!-- Row 6 - Damage__c - Sample_Comments__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Damage__c.label}: " styleClass="lbl"/>
+                            <apex:outputText value="&#10003;" escape="false" rendered="{!obj.Damage__c}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Sample_Comments__c.label}: " styleClass="lbl"/>{!obj.Sample_Comments__c}</td>
+                    </tr>
+                    <tr><!-- Row 7 - Empty - No_of_Packages__c -->
+                        <td></td>
+                            <td><apex:outputText value="{!$ObjectType.Case.fields.No_of_Packages__c.label}:" styleClass="lbl"/>
+                                <apex:outputText value="{0,number}">
+                                    <apex:param value="{!obj.No_of_Packages__c}" />
+                                </apex:outputText></td>
+                        </tr>
+                    <tr><!-- Row 8 - Empty - Sample_Collection_Date__c -->
+                        <td></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Sample_Collection_Date__c.label}:" styleClass="lbl"/>
+                            <apex:outputText value="{0,date,dd'/'MM'/'yyyy}">
+                                <apex:param value="{!obj.Sample_Collection_Date__c}" />
+                            </apex:outputText></td>
+                    </tr>
+                    <tr><!-- Row 9 - Empty - Sample_Arrival_Date__c -->
+                        <td></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Sample_Arrival_Date__c.label}:" styleClass="lbl"/>
+                            <apex:outputText value="{0,date,dd'/'MM'/'yyyy}">
+                                <apex:param value="{!obj.Sample_Arrival_Date__c}" />
+                            </apex:outputText></td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Quality Information Section -->
+            <h3>{!$Label.Quality_Info_Section}</h3>
+            <div class="wrapper">
+                <table>
+                    <tr><!-- Row 1 - Quality_Case_Owner__c - Communicate_to_Infoline__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Quality_Case_Owner__c.label}: " styleClass="lbl"/>{!obj.Quality_Case_Owner__r.Name}</td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Communicate_to_Infoline__c.label}: " styleClass="lbl"/>
+                            <apex:outputText value="&#10003;" escape="false" rendered="{!obj.Communicate_to_Infoline__c}"/></td>
+                    </tr>
+                    <tr><!-- Row 2 Bottler_Quality_Owner__c - Technical_Notes__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Bottler_Quality_Owner__c.label}: " styleClass="lbl"/>{!obj.Bottler_Quality_Owner__r.Name}</td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Technical_Notes__c.label}: " styleClass="lbl"/>{!obj.Technical_Notes__c}</td>
+                    </tr>
+                    <tr><!-- Row 3 - Quality_Status__c - Empty-->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Quality_Status__c.label}: " styleClass="lbl"/><apex:outputField value="{!obj.Quality_Status__c}" lang="{!lang}"/></td>
+                        <td></td>
+                    </tr>
+                    <tr><!-- Row 4 - Package_Supplier__c - Package_Batch__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Package_Supplier__c.label}: " styleClass="lbl"/>{!obj.Package_Supplier__r.Name}</td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Package_Batch__c.label}: " styleClass="lbl"/>{!obj.Package_Batch__c}</td>
+                    </tr>
+                    <tr><!-- Row 5 Closure_Supplier__c - Closure_Batch__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Closure_Supplier__c.label}: " styleClass="lbl"/>{!obj.Closure_Supplier__r.Name}</td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Closure_Batch__c.label}: " styleClass="lbl"/>{!obj.Closure_Batch__c}</td>
+                    </tr>
+                    <tr><!-- Row 6 - Trend -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Trend__c.label}: " styleClass="lbl"/>{!obj.Trend__r.Name}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Consumer Sample Analysis Section -->
+            <h3>{!$Label.Consumer_Smpl_Analysis_Section}</h3>
+            <div class="wrapper">
+                <table>
+                    <tr><!-- Row 1 - Laboratory_of_Analysis__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Laboratory_of_Analysis__c.label}:" styleClass="lbl"/>{!obj.Laboratory_of_Analysis__r.Name}</td>
+                    </tr>
+                    <tr><!-- Row 2 - Lab_Reception_Date__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Lab_Reception_Date__c.label}: " styleClass="lbl"/>
+                            <apex:outputText value="{0,date,dd'/'MM'/'yyyy}">
+                                <apex:param value="{!obj.Lab_Reception_Date__c}" />
+                            </apex:outputText></td>
+                    </tr>
+                    <tr><!-- Row 3 - No_of_Open_Samples__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.No_of_Open_Samples__c.label}: " styleClass="lbl"/>
+                            <apex:outputText value="{0,number}">
+                                <apex:param value="{!obj.No_of_Open_Samples__c}" />
+                            </apex:outputText></td>
+                    </tr>
+                    <tr><!-- Row 4 - No_of_Closed_Samples__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.No_of_Closed_Samples__c.label}: " styleClass="lbl"/>
+                            <apex:outputText value="{0,number}">
+                                <apex:param value="{!obj.No_of_Closed_Samples__c}" />
+                            </apex:outputText></td>
+                    </tr>
+                    <tr><!-- Row 5 - Retention_Sample__c - Retention_Sample_Txt__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Retention_Sample__c.label}: " styleClass="lbl"/>
+                            <apex:outputText value="&#10003;" escape="false" rendered="{!obj.Retention_Sample__c}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Retention_Sample_Txt__c.label}: " styleClass="lbl"/>{!obj.Retention_Sample_Txt__c}</td>
+                    </tr>
+                    <tr><!-- Row 6 - Shipment_Time__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Shipment_Time__c.label}: " styleClass="lbl"/>
+                            <apex:outputText value="{0,number}">
+                                <apex:param value="{!obj.Shipment_Time__c}" />
+                            </apex:outputText></td>
+                    </tr>
+
+                    <!-- Sample Analysis Section (Header not visible) -->
+                    <tr><!-- Row 1 - Appearance_of_Product__c - Appearance_of_Product_Txt__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Appearance_of_Product__c.label}: " styleClass="lbl"/>
+                            <apex:outputText value="&#10003;" escape="false" rendered="{!obj.Appearance_of_Product__c}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Appearance_of_Product_Txt__c.label}: " styleClass="lbl"/>{!obj.Appearance_of_Product_Txt__c}</td>
+                    </tr>
+                    <tr><!-- Row 2 - Appearance_of_Package__c - Appearance_of_Package_Txt__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Appearance_of_Package__c.label}: " styleClass="lbl"/>
+                            <apex:outputText value="&#10003;" escape="false" rendered="{!obj.Appearance_of_Package__c}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Appearance_of_Package_Txt__c.label}: " styleClass="lbl"/>{!obj.Appearance_of_Package_Txt__c}</td>
+                    </tr>
+                    <tr><!-- Row 3 - Sensory_Evaluation__c - Sensory_Evaluation_Txt__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Sensory_Evaluation__c.label}: " styleClass="lbl"/>
+                            <apex:outputText value="&#10003;" escape="false" rendered="{!obj.Sensory_Evaluation__c}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Sensory_Evaluation_Txt__c.label}: " styleClass="lbl"/>{!obj.Sensory_Evaluation_Txt__c}</td>
+                    </tr>
+                    <tr><!-- Row 4 - Chemical_Analysis__c - Chemical_Analysis_Txt__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Chemical_Analysis__c.label}: " styleClass="lbl"/>
+                            <apex:outputText value="&#10003;" escape="false" rendered="{!obj.Chemical_Analysis__c}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Chemical_Analysis_Txt__c.label}: " styleClass="lbl"/>{!obj.Chemical_Analysis_Txt__c}</td>
+                    </tr>
+                    <tr><!-- Row 5 - Physical_Analysis__c - Physical_Analysis_Txt__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Physical_Analysis__c.label}: " styleClass="lbl"/>
+                            <apex:outputText value="&#10003;" escape="false" rendered="{!obj.Physical_Analysis__c}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Physical_Analysis_Txt__c.label}: " styleClass="lbl"/>{!obj.Physical_Analysis_Txt__c}</td>
+                    </tr>
+                    <tr><!-- Row 6 - Microbiological_Analysis__c - Microbiological_Analysis_Txt__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Microbiological_Analysis__c.label}: " styleClass="lbl"/>
+                            <apex:outputText value="&#10003;" escape="false" rendered="{!obj.Microbiological_Analysis__c}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Microbiological_Analysis_Txt__c.label}: " styleClass="lbl"/>{!obj.Microbiological_Analysis_Txt__c}</td>
+                    </tr>
+                    <tr><!-- Row 7 - Health_Risk__c - Health_Risk_Txt__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Health_Risk__c.label}: " styleClass="lbl"/>
+                            <apex:outputText value="&#10003;" escape="false" rendered="{!obj.Health_Risk__c}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Health_Risk_Txt__c.label}: " styleClass="lbl"/>{!obj.Health_Risk_Txt__c}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Quality Report Section + Quality Comments -->
+            <h3>{!$Label.Quality_Report_Section}</h3>
+            <div class="wrapper">
+                <table>
+                    <tr>
+                        <td><apex:outputText value="{!$Label.ECICFactSheet_caseQualityComments}: " styleClass="lbl"/><br/></td>
+                    </tr>
+                     <apex:repeat value="{!qualityAuthors}" var="currqc" rendered="true"> 
+                         <tr>
+                             <u>{!currqc}</u><br/>
+                         <td colspan="2">
+                                 {!qualityComments[currqc]}<br/><br/>
+                             </td>    
+                         </tr>   
+                     </apex:repeat>
+                                    
+                    <tr><!-- Row 1 - Date_of_the_report__c -->
+                        <td width="50%"><apex:outputText value="{!$ObjectType.Case.fields.Date_of_the_report__c.label}: " styleClass="lbl"/>
+                            <apex:outputText value="{0,date,dd'/'MM'/'yyyy}">
+                                <apex:param value="{!obj.Date_of_the_report__c}" />
+                            </apex:outputText></td>
+                    </tr>
+
+                    <tr><!-- Row 2 - Quality_Technical_Reason__c - Process_Type__c -->
+                        <td width="50%"><apex:outputText value="{!$ObjectType.Case.fields.Quality_Technical_Reason__c.label}: " styleClass="lbl"/><apex:outputField value="{!obj.Quality_Technical_Reason__c}" lang="{!lang}"/></td>
+                        <td width="50%"><apex:outputText value="{!$ObjectType.Case.fields.Process_Type__c.label}: " styleClass="lbl"/><apex:outputField value="{!obj.Process_Type__c}" lang="{!lang}"/></td>
+                    </tr>
+                    <tr><!-- Row 3 - Root_Cause_Identification__c - Cause_of_Complaint__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Root_Cause_Identification__c.label}:" styleClass="lbl"/> {!obj.Root_Cause_Identification__c}</td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Cause_of_Complaint__c.label}: " styleClass="lbl"/><apex:outputField value="{!obj.Cause_of_Complaint__c }" lang="{!lang}"/></td>
+                    </tr>
+                    <tr><!-- Row 4 - Food_Safety_toxicological__c - Food_Safety_Toxicological_txt__c -->
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Food_Safety_toxicological__c.label}: " styleClass="lbl"/>
+                            <apex:outputText value="&#10003;" escape="false" rendered="{!obj.Food_Safety_toxicological__c}"/></td>
+                        <td><apex:outputText value="{!$ObjectType.Case.fields.Food_Safety_Toxicological_txt__c.label}: " styleClass="lbl"/>{!obj.Food_Safety_Toxicological_txt__c}</td>
+                    </tr>
+                </table>
+            </div>
+        </apex:outputPanel>
+        </div>
+    </body>
+</html>
+</apex:component>

@@ -1,0 +1,143 @@
+<apex:page controller="cwbtool.CWBSetupCtrl" tabStyle="CWB_Setup__tab" sidebar="false">  
+ 
+  <link rel="stylesheet" href="{!URLFOR($Resource.cwb,'/cwb/css/bootstrap2.css')}"/>
+ <link rel="stylesheet" href="{!URLFOR($Resource.cwb,'/cwb/ionic/css/ionicons.min.css')}"/>
+ 
+ <apex:includeScript value="{!URLFOR($Resource.cwbtool__googleAnalytics,'/RemoteSite.js')}"/>
+<c:actionstatusNew />
+
+<apex:sectionHeader title="CWB Setup" />
+<apex:pagemessages id="msgId"/>
+  <apex:form >
+    <apex:pageBlock >
+        <apex:pageblockbuttons >
+           <apex:commandbutton action="{!saveDetail}" value="Save"/>
+        </apex:pageblockbuttons>
+      <apex:pageblocksection >
+         <apex:inputfield value="{!objSetup.cwbtool__Batch_Size__c}" />
+         <apex:inputfield value="{!objSetup.cwbtool__Include_Managed_Package_Detail__c}" />
+         <apex:inputfield value="{!objSetup.cwbtool__ErrorLog__c}" />
+       </apex:pageblocksection>
+    </apex:pageBlock>
+      
+     <apex:pageBlock id="connId" title="License Management">
+        <apex:pageblockbuttons location="top">
+            <apex:outputPanel rendered="{!objConnectedOrg==null || objConnectedOrg.id==null}">
+                <a class="btn" href='/apex/oAuth2'>Connect with Master Licensing Org</a>
+            </apex:outputPanel>
+            <apex:commandButton value="Revoke Org Access" action="{!revokeAccess}" rerender="connId,msgId" oncomplete="hideOverLay();" 
+            onclick="showOverLay('Please wait..');" rendered="{!objConnectedOrg!=null && objConnectedOrg.id!=null}"/>
+        </apex:pageblockbuttons>
+        
+      <apex:pageblocksection rendered="{!objConnectedOrg!=null && objConnectedOrg.id!=null}" columns="1">
+           
+     <div class="row" >        
+        <div class="col-md-6">
+             <div class="alert alert-warning" role="alert">
+                To avoid license misuse, its good habit to revoke access to license org, once you are done with report downloads
+            </div>
+          <div class="card">    
+            <ul class="list-group">
+                
+              <li href="#" class="list-group-item active">
+                <h4 class="list-group-item-heading">Authorised license Master Org - '{!objConnectedOrg.OrgName__c}'</h4>
+                <p class="list-group-item-text">
+                    Any report downloads in this organisation will consume licensed quota from authorised master org.
+                </p>
+              </li>
+              <li href="#" class="list-group-item">
+                <h4 class="list-group-item-heading">Org ID</h4>
+                <p class="list-group-item-text">{!objConnectedOrg.Org_Id__c}</p>
+              </li>
+              <li href="#" class="list-group-item">
+                <h4 class="list-group-item-heading">Org Name</h4>
+                <p class="list-group-item-text">{!objConnectedOrg.OrgName__c}</p>
+              </li>
+              <li href="#" class="list-group-item">
+                <h4 class="list-group-item-heading">Name</h4>
+                <p class="list-group-item-text">{!objConnectedOrg.Name__c}</p>
+              </li>
+              <li href="#" class="list-group-item">
+                <h4 class="list-group-item-heading">User Name</h4>
+                <p class="list-group-item-text">{!objConnectedOrg.UserName__c}</p>
+              </li>
+              <li href="#" class="list-group-item">
+                <h4 class="list-group-item-heading">Email</h4>
+                <p class="list-group-item-text">{!objConnectedOrg.Email__c}</p>
+              </li>
+            </ul>
+           </div>
+           </div>
+           <div class="col-md-5">
+               <div class="alert" role="alert"></div>
+          <div class="card">    
+            <ul class="list-group">
+                
+             <!-- <li href="#" class="list-group-item active">
+                <h4 class="list-group-item-heading">Authorised license Master Org - '{!objConnectedOrg.OrgName__c}'</h4>
+                <p class="list-group-item-text">
+                    Any report downloads in this organisation will consume licensed quota from authorised master org.
+                </p>
+              </li>-->
+               <li class="list-group-item">
+                 <div class="progress">
+                     <div class="progress-bar progress-bar-danger" style="width:{!usedPercent}%" title="{!usedPercent}% Used">
+                        <span class="sr-only">{!usedPercent}% Used</span> 
+                      </div>
+                      <div class="progress-bar progress-bar-success" style="width: {!availablePercent}%" title="{!availablePercent}% Available">
+                        <span class="sr-only">{!availablePercent}% Available</span> 
+                      </div>
+                     
+                  </div>
+              </li>      
+              <li href="#" class="list-group-item">
+                <h4 class="list-group-item-heading">Number Of Report License</h4>
+                <p class="list-group-item-text">{!objCWBReportModel.total_reports_licence}</p>
+              </li>
+              <li href="#" class="list-group-item">
+                <h4 class="list-group-item-heading">Used Licenses</h4>
+                <p class="list-group-item-text">{!objCWBReportModel.reportsDownloaded}</p>
+              </li>
+              <li href="#" class="list-group-item">
+                <h4 class="list-group-item-heading">Remaining Licenses</h4>
+                <p class="list-group-item-text">{!objCWBReportModel.availableLicense}</p>
+              </li>
+             
+              </ul>
+           </div>
+          </div> 
+         </div> 
+       </apex:pageblocksection>
+    </apex:pageBlock>
+      
+    <apex:outputpanel id="remoteSite">
+        
+     <apex:pageBlock title="Important Post Install Step" rendered="{!bMetadataConnectionWarning}">
+      <!-- <img src="http://andrewfawcett.files.wordpress.com/2013/07/blog_chart1.jpg" width="200" height="200" align="left"/>-->
+     <div style='display:inline-block'>
+         <div style='float:left;font-size:100px;width:10%;color:cadetblue;'>
+           <span class="ion-settings" aria-hidden="true"></span>
+         </div>  
+        
+         <div style='float:left;width:89%;'>
+    	 	<h1>Important Post Install Step:</h1> 
+    			<p>In order to utilize the features of CWB tool you need to permit the tool access to the Salesforce Metadata API by adding a
+    			 <a href='{!strDomainName}/0rp/e?EndpointUrl={!strDomainName}&SiteName={!RemoteSiteName}&saveURL={!$Page.CWB_Setup}'>Remote Site Setting</a> with this Salesforce Server URL <b>{!strDomainName}</b></p>
+    			<p> Click the <b>Create Remote Site Setting</b> button to have the tool perform this step for you.</p><br/>
+    			<input id="createremotesitebtn" class='Btn Btn-primary' type="button" onclick=" showOverLay('Please wait..');createRemoteSite('{!strDomainName}','{!$Api.Session_ID}','{!RemoteSiteName}');" value="Create Remote Site Setting"/>
+    	   </div>
+	    </div>  
+	  </apex:pageBlock>
+    </apex:outputpanel>
+    <apex:actionFunction name="displayRemoteSiteResponse" action="{!displayRemoteSiteResponse}" rerender="remoteSite,msgId" oncomplete="hideOverLay();">
+            <apex:param name="metadataResponse" assignTo="{!metadataResponse}" value="{!metadataResponse}"/>
+        </apex:actionFunction>
+      
+  </apex:form>
+  
+  <script>
+
+</script>
+  
+  
+</apex:page>

@@ -1,0 +1,40 @@
+<apex:component access="global" controller="ECICOpenAlertComponentController">
+    <apex:attribute name="userIdAttr" description="User Id"  type="Id" assignTo="{!userId}" />
+    
+    <style type="text/css">
+        table
+        {
+            border-collapse:collapse;
+        }
+        table, td, th
+        {
+            border:1px solid black;
+        }
+        th {
+            font-size: 15px;
+            font-face: arial;  
+            text-align: center;
+            padding: 3px;
+        }
+        td 
+        {
+            font-size: 15px; 
+            font-face: verdana; 
+            padding: 3px;
+        }
+     </style>
+
+    <table>
+        <tr>
+            <th>{!$ObjectType.Open_Alert__c.Fields.Name.Label}</th><th>{!$ObjectType.Open_Alert__c.Fields.End_Date__c.Label}</th>
+        </tr>
+        <apex:repeat var="openAlert" value="{!ExpiredList}">
+            <tr>
+                <td><a href="{!URL}/{!openAlert.id}">{!openAlert.Name}</a></td>
+                <td>{!openAlert.End_Date__c}</td>
+            </tr>
+        </apex:repeat>                
+    </table>
+         
+
+</apex:component>

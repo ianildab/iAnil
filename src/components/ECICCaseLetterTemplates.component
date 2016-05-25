@@ -1,0 +1,49 @@
+<apex:component access="global" language="{!lang}">
+<apex:attribute name="obj" description="Current case." type="Case" />
+<apex:attribute name="lang" description="Language" type="String" />
+<apex:attribute name="type" description="Letter type" type="String" />
+<body>
+<table class="wrapper">
+<tr><td>
+    <img src="{!$Setup.General_Settings__c.Host__c}/servlet/servlet.ImageServer?id={!$Setup.General_Settings__c.ES_Letter_Logo_Id__c}&oid={!$Organization.Id}" />
+    <div id="addressee">
+    {!obj.Account.Name}
+    <br/>
+    <apex:outputText value="{!obj.Account.Shipping_Address__c}" escape="false" />
+    </div>
+    <div id="date">
+    <apex:outputText value="{0}, {1,date}">
+    <apex:param value="Madrid" /> <!-- replace with dynamic content-->
+    <apex:param value="{!TODAY()}" />
+    </apex:outputText>
+    </div>
+    <div id="greeting">
+    {!$Label.Dear} {!obj.Contact.Salutation} {!obj.Contact.Name}{!$Label.Dear_end}
+    </div>
+    <div id="body">
+    <p>{!$Label.Thank_you_get_in_touch_with_us}.</p>
+    <p>{!$Label.Our_Concern}.</p>
+    <apex:outputPanel id="panelESp" rendered="{!IF(obj.Compensation_Product__c == 'Product', 'true', 'false')}">
+    <p><apex:outputText value="{!$Label.Note}">
+        <apex:param value="{!obj.Product__r.Name}"/>
+    </apex:outputText></p>
+    </apex:outputPanel>
+    </div>
+    <p>{!$Label.Remain_at_your_disposal}.</p>
+    <p>{!$Label.Sincerely}, </p>
+    
+    <apex:outputPanel rendered="{!IF(obj.Compensation_Product__c == 'Product', 'false', 'true')}">
+    <div id="footerQuote">
+    <quote>{!$Label.Motto_ES}</quote><br/>
+    </div>
+    <div id="footer">
+    <br/>
+    {!$Label.Motto_Source_ES}
+    </div>
+    </apex:outputPanel>
+    {!$Label.Ref}: {!obj.CaseNumber}<br/>
+    <img src="{!$Setup.General_Settings__c.Host__c}/servlet/servlet.ImageServer?id={!$Setup.User_Profile__c.Photo_Id__c}&oid={!$Organization.Id}"  />
+</td></tr>
+</table>
+</body>
+</apex:component>

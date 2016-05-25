@@ -1,0 +1,225 @@
+<apex:page standardController="Case" extensions="HUB_SuggestedArtcleAreaController" action="{!createUser}">
+   <apex:includeScript value="/support/console/22.0/integration.js"/>
+   <script>
+        function reloadparent() {
+            if (sforce.console.isInConsole()) {
+                    var flag=document.getElementById("{!$Component.frmId.on}").value;
+                    if(flag == 'true'){
+                        refreshSubTab();
+                    }
+            } else {
+                    var flag=document.getElementById("{!$Component.frmId.on}").value;
+                    if(flag == 'true'){
+                        if(document.URL.indexOf('{!$Label.HUB_EmailLinkIMCCommunityURL}') > -1){
+                            window.top.location ='{!$Label.HUB_EmailLinkIMCCommunityURL}'+'{!case.Id}';
+                        }else{
+                             window.top.location ='/{!case.Id}';
+                        }
+                       
+                    }
+                    
+                }
+            }
+
+        function refreshSubTab() {
+              sforce.console.getEnclosingTabId(refreshActiveSubtab);
+              return true;
+        }
+ 
+        var refreshActiveSubtab = function refreshActiveSubtab(result) {
+                var tabId = result.id;
+                sforce.console.refreshSubtabById(tabId, true);
+          };
+        
+        
+        function checkAllArticle(cb)
+            {
+              var inputElem = document.getElementsByTagName("input");
+              
+              if(cb.checked){
+                 for(var i=0; i<inputElem.length; i++)
+                   {
+                    if(inputElem[i].id.indexOf("checkedoneArticle")!=-1)
+                    inputElem[i].checked = true;
+                   }
+                 var inputElem = $("*");
+                 inputElem.removeAttr('disabled');  
+              }
+              else{
+                for(var i=0; i<inputElem.length; i++)
+                   {
+                    if(inputElem[i].id.indexOf("checkedoneArticle")!=-1)
+                    inputElem[i].checked = false;
+                   }
+              }
+        }
+        
+        function checkAllBestpractice(cb)
+            {
+              var inputElem = document.getElementsByTagName("input");
+              
+              if(cb.checked){
+                 for(var i=0; i<inputElem.length; i++)
+                   {
+                    if(inputElem[i].id.indexOf("checkedoneBPract")!=-1)
+                    inputElem[i].checked = true;
+                   }
+                 var inputElem = $("*");
+                 inputElem.removeAttr('disabled');  
+              }
+              else{
+                for(var i=0; i<inputElem.length; i++)
+                   {
+                    if(inputElem[i].id.indexOf("checkedoneBPract")!=-1)
+                    inputElem[i].checked = false;
+                   }
+              }
+        }
+        function checkAllCases(cb)
+            {
+              var inputElem = document.getElementsByTagName("input");
+              
+              if(cb.checked){
+                 for(var i=0; i<inputElem.length; i++)
+                   {
+                    if(inputElem[i].id.indexOf("checkedoneCase")!=-1)
+                    inputElem[i].checked = true;
+                   }
+                 var inputElem = $("*");
+                 inputElem.removeAttr('disabled');  
+              }
+              else{
+                for(var i=0; i<inputElem.length; i++)
+                   {
+                    if(inputElem[i].id.indexOf("checkedoneCase")!=-1)
+                    inputElem[i].checked = false;
+                   }
+              }
+        }
+    function submitOnReturn(evt) {
+        evt = evt ? evt : window.event;
+        var key = (evt.keyCode) ? evt.keyCode : ((evt.charCode) ? evt.charCode : evt.which);
+        if (key == 13) {
+            clickSubmit();
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function clickSubmit() {
+        var btn = document.getElementById("{!$Component.frmId.btnSearch}");
+        if (btn) btn.click();
+    }   
+   
+   setFocus = function() { return; }            
+        
+   </script>
+   <apex:form id="frmId" >
+   <apex:inputHidden value="{!refreshPage}" id="on"/>
+   <apex:pageMessages id="Message"></apex:pageMessages>
+   
+   <div style="padding-left:5px;" class="labelCol">
+        Search :  &nbsp;<apex:inputText value="{!searchString}" tabindex="0" onkeypress="return submitOnReturn(event);"/>
+        <apex:commandButton id="btnSearch" value="Search" action="{!SearchContents}" tabindex="0" rerender="frmId" style="height:20px;" status="status"/>&nbsp;&nbsp;
+        <span>For best results, use only 1 or 2 words in your search.</span>
+        <apex:actionstatus startText="Processing.." id="status">
+                    <apex:facet name="start" >
+                        <img src="{!$Resource.hub_loading}" />
+                    </apex:facet>
+        </apex:actionstatus>
+        
+   </div>
+   <div style="padding-left:5px;" class="labelCol">
+   <apex:outputLabel style="color:red;" value="Current search criteria is returning more than 100 records, please refine your search criteria" rendered="{!maxLimitMsg}"/>
+
+   </div>
+   <table width = "100%" style="vertical-align: top;" id="resulttable"> 
+   <tr style="vertical-align: top; width:100%;"> 
+        
+        <!-- #Suggested Article -->
+        <td width = "35%">
+        
+        <apex:pageBlock id="pbBlockId" >
+        <div style="height:25px;width:100%;background:#A9A9A9;font-weight: bold;font-size:14px;color:#fff;padding-left:5px;">
+            <apex:image url="{!$Resource.HUB_KoBottle}" width="20" height="20"/>&nbsp;&nbsp; Articles
+        </div>
+             &nbsp;&nbsp;&nbsp;&nbsp;<apex:image value="{!$Resource.HUB_Arrow}" rendered="{!ShowArticletable}"/>
+             <apex:commandButton id="btnAttachArticle" value="Attach to Case"  rendered="{!ShowArticletable}" action="{!attachArticle}" rerender="frmId" style="height:20px;" oncomplete="reloadparent();"/><br /><br />
+             
+            <!-- In our table we are displaying the cContact records -->
+            <apex:outputLabel style="text-align:center;padding-left:65px;" value="No records found" rendered="{!if(ShowArticletable= true,false, true)}"/>
+            <div style="overflow-y:scroll; height:200px; display: {!IF(ShowArticletable,'','none')};">
+            <apex:pageBlockTable value="{!articleList}" var="c" id="table" rendered="{!ShowArticletable}"  >
+                <apex:column >
+                    <apex:facet name="header"><apex:inputCheckbox id="allCheck" onclick="checkAllArticle(this)"/></apex:facet>
+                    
+                    <!-- This is our selected Boolean property in our wrapper class -->
+                    <apex:inputCheckbox rendered="{!NOT(CONTAINS(collegeArtcileString, c.con.KnowledgeArticleId))}"  value="{!c.selected}" id="checkedoneArticle" />
+                    <apex:image rendered="{!If(CONTAINS(collegeArtcileString, c.con.KnowledgeArticleId),true,false)}" url="{!$Resource.HUB_attachmentIcon}" width="16" height="16"/>
+                </apex:column>
+
+                <!-- This is how we access the contact values within our cContact container/wrapper -->
+                <apex:column headerValue="Article Title" >
+                <apex:outputlink value="/{!c.con.id}" target="_blank"> {!c.con.title}</apex:outputlink>
+               </apex:column>            
+            </apex:pageBlockTable>
+            </div>
+        </apex:pageBlock>
+        
+        </td>
+        
+        <!-- #Suggested Best Practices -->
+        <td width = "35%">
+            <apex:pageBlock >
+            <div style="height:25px;width:100%;background:#A9A9A9;font-weight: bold;font-size:14px;color:#fff;padding-left:5px;">
+            <apex:image url="{!$Resource.HUB_KoBottle}" width="20" height="20"/>&nbsp;&nbsp;
+            Learnings</div>
+            &nbsp;&nbsp;&nbsp;&nbsp;<apex:image value="{!$Resource.HUB_Arrow}" rendered="{!ShowBPtable}"/>
+            <apex:commandButton value="Attach to Case" action="{!attachBP}" rendered="{!ShowBPtable}" rerender="frmId" style="height:20px;" oncomplete="reloadparent();"/><br /><br />
+            <!-- In our table we are displaying the cContact records -->
+            <apex:outputLabel style="text-align:center;padding-left:65px;" value="No records found" rendered="{!if(ShowBPtable= true,false, true)}"/>
+            <div style="overflow-y:scroll; height:200px; display: {!IF(ShowBPtable,'','none')};">
+            <apex:pageBlockTable value="{!bestpracticeList}" var="c" id="table" rendered="{!ShowBPtable}">
+                <apex:column >
+                    <apex:facet name="header"><apex:inputCheckbox id="allCheck" onclick="checkAllBestpractice(this)"/></apex:facet>
+                    <apex:inputCheckbox rendered="{!NOT(CONTAINS(collegeBestPracticeString, c.con.Id))}" value="{!c.selected}" id="checkedoneBPract"/>
+                    <apex:image rendered="{!if(CONTAINS(collegeBestPracticeString, c.con.Id),true,false)}" url="{!$Resource.HUB_attachmentIcon}" width="16" height="16"/>
+                </apex:column>
+                <!-- This is how we access the contact values within our cContact container/wrapper -->
+                <apex:column headerValue="Title" >
+                <apex:outputlink value="/{!c.con.id}" target="_blank"> {!c.con.Title__c}</apex:outputlink>
+               </apex:column>              
+            </apex:pageBlockTable>
+            </div>
+        </apex:pageBlock>
+        </td>
+        
+         <!-- #Suggested Cases -->
+         <td width = "35%">
+            <apex:pageBlock >
+            <div style="height:25px;width:100%;background:#A9A9A9;font-weight: bold;font-size:14px;color:#fff;padding-left:5px;">
+            <apex:image url="{!$Resource.HUB_KoBottle}" width="20" height="20"/>&nbsp;&nbsp;Cases</div>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <apex:image value="{!$Resource.HUB_Arrow}" rendered="{!ShowCasetable}"/>
+            <apex:commandButton value="Attach to Case" rerender="frmId" action="{!attachCase}" rendered="{!ShowCasetable}"  style="height:20px;" oncomplete="reloadparent();"/><br /><br />
+            <apex:outputLabel style="text-align:center;padding-left:65px;" value="No records found" rendered="{!if(ShowCasetable= true,false, true)}"/>
+            <!-- In our table we are displaying the cContact records -->
+            <div style="overflow-y:scroll; height:200px; display: {!IF(ShowCasetable,'','none')};">
+            <apex:pageBlockTable value="{!casesList}" var="c" id="table" rendered="{!ShowCasetable}">
+                <apex:column >
+                    <apex:facet name="header"><apex:inputCheckbox id="allCheck" onclick="checkAllCases(this)"/></apex:facet>
+                    <apex:inputCheckbox rendered="{!NOT(CONTAINS(collegeCasesString, c.con.Id))}" value="{!c.selected}" id="checkedoneCase" />
+                    <apex:image rendered="{!if(CONTAINS(collegeCasesString, c.con.Id),true,false)}" url="{!$Resource.HUB_attachmentIcon}" width="16" height="16"/>
+                </apex:column>
+                <!-- This is how we access the contact values within our cContact container/wrapper -->
+                <apex:column headerValue="Case Title" >
+                <apex:outputlink value="/{!c.con.Id}" target="_blank"> {!c.con.Subject}</apex:outputlink>
+               </apex:column>                          
+            </apex:pageBlockTable>
+            </div>
+        </apex:pageBlock>
+        </td>
+        </tr></table>
+    </apex:form>
+</apex:page>

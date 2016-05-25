@@ -1,0 +1,72 @@
+<apex:component access="global" controller="ECICCaseController">
+<!-- <style>
+/*
+The styles isn't work on gmail.com
+the styles was moved to html
+*/
+    .maintbl {
+        border-top: black 1px solid;
+        border-left: black 1px solid;
+        border-bottom: black 1px solid;
+        border-collapse: collapse;
+        padding: 3px;
+    }
+    .maintbl td, .test {
+        border-top: black 1px solid ;
+        border-right: black 1px solid;
+    }
+    .maintbl th {
+        border-right: black solid 1px;
+        
+    }
+    </style> -->
+    <apex:attribute name="object" description="Case Related Object" type="sObject" assignTo="{!obj}"/>
+    
+    <table style="border: black 1px solid;
+                  border-left: black 1px solid;
+                  border-right: black 1px solid;
+                  border-bottom: black 1px solid;
+                  border-collapse: collapse;
+                  padding: 3px;" cellpadding="0" cellspacing="0" border="0" width="100%">
+        <th  style="border:black solid 1px">{!$ObjectType.Case.fields.casenumber.label}</th>
+        <th  style="border:black solid 1px">{!$ObjectType.Case.fields.CreatedDate.label}</th>
+        <th  style="border:black solid 1px">{!$ObjectType.Case.fields.Production_Code__c.label}</th>
+        <th  style="border:black solid 1px">{!$ObjectType.Case.fields.Subject.label}</th>
+        <th  style="border:black solid 1px">{!$ObjectType.Case.fields.Product__c.label}</th>
+        <th  style="border:black solid 1px">{!$ObjectType.Case.fields.Bottler__c.label}</th>
+        <th  style="border:black solid 1px">{!$ObjectType.Case.fields.Plant__c.label}</th>
+        <th  style="border:black solid 1px">{!$ObjectType.Product__c.fields.Package_Type__c.label}</th>
+        <th  style="border:black solid 1px">{!$ObjectType.Product__c.fields.Size__c.label}</th>
+        <th  style="border:black solid 1px">{!$ObjectType.Case.fields.BBE_Date__c.label}</th>
+        <th  style="border:black solid 1px">{!$ObjectType.Account.label}</th>
+        <th  style="border:black solid 1px">{!$ObjectType.Case.fields.Point_Of_Sale__c.label}</th>
+        <th  style="border:black solid 1px">{!$ObjectType.Case.fields.Place_of_Purchase__c.label}</th>
+        <th  style="border:black solid 1px">{!$ObjectType.Case.fields.Region_of_Purchase__c.label}</th>
+    <apex:repeat value="{!cases}" var="entry" >
+        <tr style="border-top: black 1px solid;border-right: black 1px solid;">
+            <td style="border-top: black 1px solid;border-right: black 1px solid;">
+                <apex:outputLink value="{!$Setup.General_Settings__c.Host__c}/{!entry.Id}">{!entry.casenumber}</apex:outputLink>
+            </td>
+            <td style="border-top: black 1px solid;border-right: black 1px solid;"><apex:outputText value="{0,date,dd'/'MM'/'yyyy}">
+                    <apex:param value="{!entry.CreatedDate}" /> 
+                </apex:outputText>
+            </td>
+            <td style="border-top: black 1px solid;border-right: black 1px solid;">{!entry.Production_Code__c}</td>
+            <td style="border-top: black 1px solid;border-right: black 1px solid;">{!entry.Subject}</td>
+            <td style="border-top: black 1px solid;border-right: black 1px solid;">{!entry.Product__r.Product_Description__c}</td>
+            <td style="border-top: black 1px solid;border-right: black 1px solid;">{!entry.Bottler__r.Name}</td>
+            <td style="border-top: black 1px solid;border-right: black 1px solid;">{!entry.Plant__r.Name}</td>
+            <td style="border-top: black 1px solid;border-right: black 1px solid;">{!entry.Product__r.Package_Type__c}</td>
+            <td style="border-top: black 1px solid;border-right: black 1px solid;">{!entry.Product__r.Size__c}</td>
+            <td style="border-top: black 1px solid;border-right: black 1px solid;"><apex:outputText value="{0,date,dd'/'MM'/'yyyy}">
+                    <apex:param value="{!entry.BBE_Date__c}" /> 
+                </apex:outputText>
+            </td>
+            <td style="border-top: black 1px solid;border-right: black 1px solid;">{!entry.Account.Name}</td>
+            <td style="border-top: black 1px solid;border-right: black 1px solid;">{!entry.Point_Of_Sale__r.Name}</td>
+            <td style="border-top: black 1px solid;border-right: black 1px solid;">{!entry.Place_of_Purchase__c}</td>
+            <td style="border-top: black 1px solid;border-right: black 1px solid;">{!entry.Region_of_Purchase__r.Name}</td>
+        </tr>
+    </apex:repeat>
+    </table>  
+</apex:component>

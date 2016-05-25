@@ -1,0 +1,69 @@
+<apex:page id="loginPage" showHeader="false" title="{!$Label.site.site_login}" standardController="Janrain__Engage_Settings__c" recordSetVar="settings">
+  <apex:composition template="{!$Site.Template}">
+    <apex:define name="body">  
+      <center>
+        <apex:panelGrid bgcolor="white" columns="1"> 
+          <br/>
+          <br/>
+          <apex:panelGrid width="900" cellpadding="0" cellspacing="0" bgcolor="white" columns="1" styleClass="topPanelContainer"> 
+            <br/>
+            <apex:outputPanel layout="block" styleClass="topPanel">
+              <apex:panelGrid width="900" cellpadding="0" cellspacing="0" bgcolor="white" columns="3"> 
+                <apex:image url="{!URLFOR($Resource.Janrain__SiteSamples, 'img/clock.png')}"/>
+                <apex:panelGroup >
+                  <div id="janrainEngageEmbed"></div>
+                </apex:panelGroup>
+                <apex:panelGroup >
+                  <br/>
+                  <apex:outputText styleClass="title" value="{!$Label.site.login}"/>
+                  <c:SiteLogin id="siteLogin"/>
+                  <br/>
+                </apex:panelGroup>
+              </apex:panelGrid> 
+             </apex:outputPanel>
+            <c:SitePoweredBy />
+          </apex:panelGrid> 
+       </apex:panelGrid>
+      </center>
+      <br/>
+    </apex:define>
+  </apex:composition>
+  <apex:repeat value="{!settings}" var="setting">
+  <script type="text/javascript">
+    var rpxName = "{!setting.Janrain__App_Name__c}";
+  </script>
+  </apex:repeat>
+<script type="text/javascript">
+(function() {
+    if (typeof window.janrain !== 'object') window.janrain = {};
+    if (typeof window.janrain.settings !== 'object') window.janrain.settings = {};
+    
+    /* _______________ can edit below this line _______________ */
+
+    janrain.settings.tokenUrl = 'https://login.salesforce.com/services/authcallback/00DE0000000ZSV0MAO/RPX?flowtype=sso';
+    janrain.settings.type = 'embed';
+
+    /* _______________ can edit above this line _______________ */
+
+    function isReady() { janrain.ready = true; };
+    if (document.addEventListener) {
+      document.addEventListener("DOMContentLoaded", isReady, false);
+    } else {
+      window.attachEvent('onload', isReady);
+    }
+
+    var e = document.createElement('script');
+    e.type = 'text/javascript';
+    e.id = 'janrainAuthWidget';
+
+    if (document.location.protocol === 'https:') {
+      e.src = 'https://rpxnow.com/js/lib/' + rpxName + '/engage.js';
+    } else {
+      e.src = 'http://widget-cdn.rpxnow.com/js/lib/' + rpxName + '/engage.js';
+    }
+
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(e, s);
+})();
+</script>
+</apex:page>

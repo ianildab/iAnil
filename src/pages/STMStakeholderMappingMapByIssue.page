@@ -1,0 +1,310 @@
+<apex:page showHeader="false" standardController="STMIssue__c" extensions="STMStakeholderMappingController">
+ <apex:includeScript id="JQuery" value="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"/>
+ <apex:includeScript id="googleJSApi" value="https://www.google.com/jsapi" />
+ <apex:includeScript id="jqUI" value="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"/>
+ <apex:includeScript id="CommonJS" value="{!$Resource.SEPCommonJS}"/>
+ <style>
+    .wrapper
+    {
+    width:100%;   
+    }
+    .table
+    {
+    display:table;   
+    width:100%;
+    }
+    .optionBar
+    {
+    display:table-row;
+    }
+    .row
+    {
+    display:table-row;
+    padding:15px;
+    }    
+    .row_g
+    {
+    display:table-row;
+    }     
+    .col
+    {
+    vertical-align:top;
+    display:table-cell;
+    margin-left:0px; 
+    //border:1px solid #bebebe;
+    padding:15px;
+    }     
+    .c25
+    {
+    width:25%; 
+    margin-top:100px;
+    padding:0px;
+    }
+    .c50
+    {
+    width:50%;
+    padding:0px;
+    }     
+    .c75
+    {
+    width:75%;
+    padding:0px;
+    }
+    .additionalInfo
+    {
+    display:table-column;
+    }
+    .optionBtn
+    {
+    display:none;  
+    }
+    .optionTitle
+    {
+      font-weight:bold;
+      color:blue;
+      fontName:Arial;
+      fontSize:12
+    }
+    //-------------------- Google Charts tooltip styles ----------------------------------------------------------------
+    .tooltip
+    {
+    padding:5px 5px 5px 5px !important;
+    }
+    .tooltipData
+    {
+    padding:5px 5px 5px 5px !important;
+    }
+    .tooltipHeader 
+    {
+    
+    }
+    #tooltipHeader
+    {
+    display: "table-cell";
+    border-bottom   :1px solid #bebebe !important;
+    color: "blue" !important;
+    background: "#D3C6E4" !important;
+    font-style: "bold" !important;
+    }
+    //-------------------- Some fixes in SF styles ---------------------------------------------------------------------
+    .bPageBlock.brandSecondaryBrd.apexDefaultPageBlock.secondaryPalette
+    {
+    border-color:rgb(255, 255, 255);
+    background-color:rgb(255, 255, 255);
+    }
+ </style>
+ <script type="text/javascript">
+     var IE = checkIEVersion(); 
+     window.$j = jQuery.noConflict();
+     google.load( 'visualization', '1.0', {'packages':['corechart']});
+     
+    function hideOptionBar() {
+        $j(".optionBtn").show();
+        $j(".optionBar").hide();
+        $j("#chartBlock").show();
+    }
+    
+    function showOptionBar() {
+        $j(".optionBtn").hide();
+        $j(".optionBar").show();
+        $j("#chartBlock").hide();
+    }
+    
+    function createCustomHTMLContent(stakeholders) {
+        var result = '<div class="tooltip"><div class="tooltipHeader" id="tooltipHeader">Attitude Score:'
+        +stakeholders[0].attitudeScore +
+        '<br/>Influence Score:' + stakeholders[0].influenceScore + '</div><div class="tooltipData">';
+        
+        for (i=0; i<stakeholders.length; i++) {
+            result += ('<a href="/' + stakeholders[i].Id + '">' + stakeholders[i].accountName + '</a><br/>');
+        }
+        return (result + '</div></div>');
+    }
+ 
+     function initCharts() {
+       var selection;
+       var visualization;
+       var issueId = "{!$CurrentPage.parameters.id}";
+       var amountOfDisplayesIssues = document.getElementById("displayedIssues").value;
+       var minInfluenceScore = document.getElementById("influenceScore").value;
+       var mimAttitudeScore = document.getElementById("attitudeScore").value;
+
+       STMStakeholderMappingController.loadStakeholdersByIssue( issueId,amountOfDisplayesIssues,minInfluenceScore,mimAttitudeScore,
+              function(result, event){  
+                  visualization = new google.visualization.ScatterChart(
+                   document.getElementById('chartBlock'));
+                  var data = new google.visualization.DataTable();
+                  data.addColumn('number', 'Influence score');
+                  data.addColumn('number', 'Attitude score');
+                  data.addColumn({type:'string', role: 'tooltip', 'p': {'html': true}});
+                  
+                  var keySet,
+                      resultsByKey = {}, // associated list<key, array[resultObject]>
+                      arr = [],
+                      key = '', // format: i1.8a2.3 which means influenceScore=1.8 and attitudeScore=2.3
+                      ieHack = false;
+                  
+                  for (var i = 0; i < result.length; i++) {
+                    var r = result[i];
+                    key = 'i' + r.influenceScore + 'a' + r.attitudeScore;
+                    
+                    if (i === 0) {
+                        resultsByKey[key] = [r];
+                        keySet = key + '_';
+                        continue;
+                    }
+                    
+                    for (var k in resultsByKey) {
+                        if(resultsByKey.hasOwnProperty(k)) {
+                            if (k !== key) {
+                                if (keySet.indexOf(key) === -1) {
+                                   resultsByKey[key] = [r];
+                                   keySet += (key + '_');
+                                   if (IE === 8) {
+                                       ieHack = true;
+                                   }
+                                }
+                            } else {
+                               if (ieHack) { // in this place IE8 has a problem with for..in
+                                   ieHack = false;
+                                   continue;
+                               }
+                                arr = resultsByKey[k];
+                                arr.push(r);
+                                resultsByKey[k] = arr;
+                            }
+                        }
+                     }
+                  }
+                  
+                  i = 0;
+                  for (var x in resultsByKey) {
+                     data.addRow([ resultsByKey[x][0].influenceScore, resultsByKey[x][0].attitudeScore,createCustomHTMLContent(resultsByKey[x])]);
+                     data.setRowProperty( i, "Id",     r.Id);
+                     data.setRowProperty( i, "Name",   r.Name);
+                     data.setRowProperty( i, "title",  r.Name);
+                     i++;
+                  }
+                  
+                  var options = {
+                       title: 'Stakeholder Map by ' + '{!JSENCODE(currentIssueName)}',
+                       axisTitlesPosition: 'out',
+                       hAxis: {
+                               title: 'Influence score',
+                               minValue: 1.00,
+                               maxValue: 5.00,
+                               baseline: 3.00,
+                               viewWindowMode:'explicit',
+                               viewWindow:
+                               {
+                                max: 5.00,
+                                min: 1.00
+                               },
+                               gridlines:{count:11}
+                       },
+                       vAxis: {
+                               title: 'Attitude score',
+                               minValue: 1.00,
+                               maxValue:5.00,
+                               baseline:3.00,
+                               viewWindowMode:'explicit',
+                               viewWindow:
+                               {
+                                max:5.00,
+                                min:1.00
+                               },
+                               gridlines:{count:11}
+                       },
+                       curveType:'function',
+                       legend: 'none',
+                       pointSize: 8,
+                       series: {1:{color:'blue',pointSize:11}},
+                       tooltip: {
+                                isHtml: true,
+                                textStyle: {color: 'blue', fontName: 'Arial', fontSize: 12}
+                                },
+                       colors:    ['#e0440e', '#e6693e', '#ec8f6e', '#f3b49f', '#f6c7b6']
+                       };
+                 visualization.draw(data, options);
+                 
+                 google.visualization.events.addListener(visualization, 'onmouseout', mouseOutHandler);
+          /*        google.visualization.events.addListener(visualization, 'onmouseover', pause);
+                  */
+ 
+                 function mouseOutHandler(e) {
+                 }
+                 
+
+
+           }, {escape:true});
+       }
+       
+ </script>
+ <apex:form >
+ 
+     <apex:actionFunction name="updateListView" action="{!showStakeholdersWithSameScore}" rerender="results">
+         <apex:param name="score" value=""/> 
+     </apex:actionFunction>
+ 
+ <div class="wrapper">
+     <div class="table">
+          <div class="row">
+               <apex:pageBlock >
+                  <div class="table">
+                  <div class="optionBar">
+                   <div class="row">
+                      <div class="col">
+                          <div class="row">
+                              <a class="optionTitle">{!$Label.Amount_of_displayed_issues}</a>
+                          </div>
+                          <div class="row">
+                              <input class="input" type="text" id="displayedIssues" value="100"/>
+                          </div>
+                      </div>
+                      <div class="col">
+                          <div class="row">
+                              <a class="optionTitle">{!$Label.Minimum_Influence_Score}</a>
+                          </div>
+                          <div class="row">
+                              <input class="input" type="text" id="influenceScore" value="1"/>
+                          </div>
+                      </div>
+                      <div class="col">
+                          <div class="row">
+                              <a class="optionTitle">{!$Label.Minimum_Attitude_Score}</a>
+                          </div>
+                          <div class="row">
+                              <input class="input" type="text" id="attitudeScore" value="1"/>
+                          </div>
+                      </div>
+                   </div>
+                   <div class="row">
+                        <button type="button" onClick="initCharts(); hideOptionBar();">{!$Label.Accept}</button>
+                   </div>
+                  </div>
+                  </div>
+               </apex:pageBlock>
+          </div>
+          <div class="row_g">
+              <div class="col c75">
+                <div class="col c50">
+                 <div class="row_g">
+                  <apex:outputPanel >
+                      <apex:outputText >
+                          <div id="chartBlock" style="width: 725px; height: 725px;" />
+                      </apex:outputText>
+                      <apex:outputField value="{!STMIssue__c.Name}" rendered="false" />
+                  </apex:outputPanel>
+                 </div>
+                </div>
+                <div class="col c25">
+                 <div class="optionBtn">
+                        <button type="button" onClick="showOptionBar();">{!$Label.Show_option_bar}</button>
+                 </div>
+               </div>
+            </div>
+         </div>     
+     </div>      
+ </div>      
+    </apex:form>
+</apex:page>

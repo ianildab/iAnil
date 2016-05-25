@@ -1,0 +1,20 @@
+<apex:page controller="Janrain.EngageSettingsController">
+  <apex:sectionHeader title="Engage Settings" subtitle="Update Settings"/>
+  
+  <apex:form >
+    <apex:pageMessages id="error"/>
+    <apex:pageBlock title="Engage Settings">
+      <apex:panelGrid columns="2" style="margin-top:1em">
+        <apex:outputLabel value="Bucket Account" for="engageAccount" title="Choose a bucket account for newly created Contacts" />
+        <apex:inputField required="true" id="engageAccount" value="{!contact.AccountId}" />
+        <apex:outputLabel value="User Profile" for="engageProfile" title="Choose a profile for new portal users" />
+        <apex:inputField required="true" id="engageProfile" value="{!user.ProfileId}" />
+        <apex:outputLabel value="Engage App Name" for="appName" title="Enter your Engage application name" />
+        <apex:inputText required="true" id="appName" value="{!appName}" />
+        <apex:outputLabel value="Auth. Provider Callback" for="callback" title="Enter the callback URL for your Auth. Provider" />
+        <apex:inputText required="true" id="callback" value="{!callback}" />
+        <apex:commandButton action="{!engageSettings}" value="Submit" id="submit" />
+      </apex:panelGrid>
+    </apex:pageBlock>
+  </apex:form>
+</apex:page>

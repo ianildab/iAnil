@@ -1,0 +1,4 @@
+<apex:component language="{!langCode}">    
+  <apex:attribute name="langCode" description="Language code" type="String"/>
+  <apex:componentBody />
+</apex:component>

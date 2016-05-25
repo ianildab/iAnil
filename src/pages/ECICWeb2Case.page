@@ -1,0 +1,499 @@
+<!--  ----------------------------------------------------------------------  -->
+<!-- Author: Pavel Slepenkov                                                  -->
+<!-- Date:   04 Feb 2013                                                      -->
+<!-- JIRA:   CIC-269 test Page for Web2Case:                                  -->
+<!--  a home component that is only visible for admins-> link to a page.      -->
+<!--  should be equivalent to the form that is on the live site in terms of   -->
+<!--  fields to be filled                                                     -->
+<!--  orgId should be based on orgId of the sandbox it is invoked on          -->
+<!--  country code should be a picklist/combo box                             -->
+<!--  ----------------------------------------------------------------------- -->
+
+<apex:page standardController="Case" showHeader="false" extensions="ECICCommonConstants">
+ <apex:messages />
+ <style>
+     .wrapper
+    {
+        width:70%;
+        height: 1000px;
+        margin: 0 auto;
+        border-left: 1px solid #bebebe;
+        border-right: 1px solid #bebebe;
+    }
+    .table
+    {
+        display:table;
+        padding:15px;
+        margin: 0 auto; 
+    }
+    .row
+    {
+        display:table-row;
+    }
+    .col
+    {
+        vertical-align:top;
+        display:table-cell;
+        padding:5px;
+    }     
+    .c25 labels
+    {
+        width:25%;
+        padding:0px;
+    }
+    .c50
+    {
+        width:50%;
+        padding:0px;
+        margin-left:0px;
+    }     
+    .c75
+    {
+        width:75%;
+        padding:0px;
+    }
+    .labels
+    {
+        text-align: right;
+    }
+    h1 
+    {
+        font: 22px verdana, arial, sans-serif normal;
+        margin-bottom:10px;
+    }
+    form #submit {
+            font: 12px Verdana, Arial, sans-serif;
+            padding-bottom:5px;
+            padding-left:0;
+            padding-right:0;
+            padding-top:1px;
+            height:20px;
+            width:75px;
+            float: right;
+    }
+    form select
+    {
+          font: 12px Verdana, Arial, sans-serif;
+          width:275px;
+          height:24px;
+          _height:24px;
+          color: #000;
+          border:1px solid #A7A6AA;
+          float:right;
+          padding:2px 1px 3px 0px;
+          margin:0 4px 0 0;
+    }
+    form input
+    {
+         font: 12px Verdana, Arial, sans-serif;
+         width:275px;
+         height:16px;
+         _height:20px;
+         color: #000;
+         border:1px solid #A7A6AA;
+         float:left;
+         padding:3px 1px 2px 1px;
+         _padding:0;
+         margin:0;
+    }
+    form textarea
+    {
+        font: 12px Verdana, Arial, sans-serif;
+        width: 275px;
+        color: #000;
+        padding: 3px 1px 2px 1px;
+        border: 1px solid #A7A6AA;
+        height: 100px;
+    }
+ </style>
+ 
+<div class="wrapper">
+     <div id="header" class="table">
+        <img src="{!URLFOR($Resource.ECICWebToCaseResources,'resources/img/coca_cola_logo.png')}" width="235" height="85"/>        
+     <br/><h1>Contact {!$Organization.Name}</h1><br/><br/>
+     Please submit your request with a short description of your issue. One of our CIC representatives will contact you shortly.
+     <br/>
+     </div>    
+    <div id="contentIB" class="table">
+        <h1>Iberia</h1><br /><br />        
+        <form action="{!$Setup.General_Settings__c.Host__c}/servlet/servlet.WebToCase?encoding=UTF-8" method="POST" id="IBfrm">
+        <div id="hiddenComponents">
+            <input type="hidden" name="orgid" value="{!$Organization.Id}"/>
+             <input type="hidden" name="retURL" value="{!$Setup.General_Settings__c.Host__c}/apex/W2C_LandingPage" />        
+            <!-- <input type="hidden" name="debug" value="1"/>
+            <input type="hidden" name="debugEmail" value="Pavel_Slepenkov@epam.com"/> -->
+            <input type="hidden" id="external" name="external" value="1" />
+            <input id="priority" name="priority" type="hidden" value="Medium" />
+            <input id="origin" name="origin" type="hidden" value="Web" />
+            <input id="status" name="status" type="hidden" value="New" />
+        </div>
+        
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="name">Contact Name</label>
+            </div>
+            <div class="col c50">
+                <input id="name" maxlength="80" name="name" size="35" type="text"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="email">Email</label>
+            </div>
+            <div class="col c50">
+                <input id="email" maxlength="80" name="email" size="35" type="text" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="phone">Phone</label>
+            </div>
+            <div class="col c50">
+                <input id="phone" maxlength="40" name="phone" size="35" type="text" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="subject">Subject</label>
+            </div>
+            <div class="col c50">
+                <input  id="subject" maxlength="80" name="subject" size="35" type="text" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="reason">Case Reason</label>
+            </div>
+            <div class="col c50">
+                <select  id="reason" name="reason">
+                    <option value="">--None--</option>
+                    <option value="Sponsoring">Sponsoring</option>
+                    <option value="Corporate (I)">Corporate (I)</option>
+                    <option value="Corporate (nonQ)">Corporate (nonQ)</option>
+                    <option value="Health and Nutrition (I)">Health and Nutrition (I)</option>
+                    <option value="Health and Nutrition (nonQ)">Health and Nutrition (nonQ)</option>
+                    <option value="Brand Info (I)">Brand Info (I)</option>
+                    <option value="Brand Info (nonQ)">Brand Info (nonQ)</option>
+                    <option value="Promotion (I)">Promotion (I)</option>
+                    <option value="Promotion (nonQ)">Promotion (nonQ)</option>
+                    <option value="Commercial &amp; Distribution (I)">Commercial &amp; Distribution (I)</option>
+                    <option value="Commercial &amp; Distribution (nonQ)">Commercial &amp; Distribution (nonQ)</option>
+                    <option value="Product Info (I)">Product Info (I)</option>
+                    <option value="Product Info (nonQ)">Product Info (nonQ)</option>
+                    <option value="Product Quality">Product Quality</option>
+                    <option value="Package Quality">Package Quality</option>
+                    <option value="Wrong Number">Wrong Number</option>
+                    <option value="Insults">Insults</option>
+                    <option value="Hang up">Hang up</option>
+                    <option value="Compliment">Compliment</option>
+                    <option value="Press Release">Press Release</option>
+                    <option value="Suggestion">Suggestion</option>
+                    <option value="Material Damages">Material Damages</option>
+                    <option value="Spam">Spam</option>
+                    <option value="Corporate">Corporate</option>
+                    <option value="Health and Nutrition">Health and Nutrition</option>
+                    <option value="Brand Info">Brand Info</option>
+                    <option value="Promotion">Promotion</option>
+                    <option value="Commercial &amp; Distribution">Commercial &amp; Distribution</option>
+                    <option value="Product Info">Product Info</option>
+                    <option value="Products and Brands">Products and Brands</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="recordType">Case Type</label>
+            </div>
+            <div class="col c50">
+                <select  id="type" name="type">
+                        <option value="">--None--</option>
+                        <option value="Inquiry">Inquiry</option>
+                        <option value="Joke / Useless">Joke / Useless</option>
+                        <option value="Non-Quality Complaint">Non-Quality Complaint</option>
+                        <option value="Quality Complaint">Quality Complaint</option>
+                        <option value="Thanks">Thanks</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                <label id="countryCode" >{!$Label.Country_Code}</label> 
+            </div>
+            <div class="col c50">
+                <select id="00N20000003ZhOE" name="00N20000003ZhOE">
+                    <option>--None--</option>
+                    <option value="ES">ES</option>
+                    <option value="PT">PT</option>
+                    <option value="EN">EN</option>
+                </select> 
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                Place of Purchase
+            </div>
+            <div class="col c50">
+                <select id="00N20000002xfgC" name="00N20000002xfgC">
+                    <option>--None--</option>
+                    <option value="28">Madrid</option>
+                    <option value="8">Barcelona</option>
+                    <option value="41">Sevilla</option>
+                </select>
+            </div>
+        </div>         
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="description">Description</label>
+            </div>
+            <div class="col c50">
+                <textarea name="description" cols="45" rows="6"></textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+            
+            </div>    
+            <div class="col">
+<!--                 <input id="Process_Type__c" type="hidden" name="Process_Type__c" value="TIPO 2.5"/>    -->
+                <input id="submit" type="submit" name="submit" value="Submit"/>
+            </div>            
+        </div>
+        </form>
+    </div>
+    <div id="contentFR" class="table">
+        <h1>France</h1><br /><br />
+        <form action="{!$Setup.General_Settings__c.Host__c}/servlet/servlet.WebToCase?encoding=UTF-8" method="POST" id="FRfrm">
+        <div id="hiddenComponents">
+            <input type="hidden" name="orgid" value="{!$Organization.Id}"/>
+             <input type="hidden" name="retURL" value="{!$Setup.General_Settings__c.Host__c}/apex/W2C_LandingPage" />        
+            <!--input type="hidden" name="debug" value="1" />
+            <input type="hidden" name="debugEmail" value="Shion_Abdillah@epam.com"/> -->
+            <input type="hidden" id="external" name="external" value="1" />
+            <input id="priority" name="priority" type="hidden" value="Medium" />
+            <input id="origin" name="origin" type="hidden" value="Web" />
+            <input id="status" name="status" type="hidden" value="New" />
+            <input id="00N20000003LWLU" name="00N20000003LWLU" type="hidden" value="No Risk" />
+            <input id="00N11000000WmSM" name="00N11000000WmSM" type="hidden" value="Coke" />
+            <input type="hidden" id="00N20000003ZhOE" name="00N20000003ZhOE" value="FR" />
+
+        </div>        
+        
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="00N20000007i3SL">Salutation</label>
+            </div>
+            <div class="col c50">
+                <select  id="00N20000007i3SL" name="00N20000007i3SL">
+                    <option value="Mr.">Mr.</option>
+                    <option value="Mrs.">Mrs.</option>
+                    <option value="Ms.">Ms.</option>                    
+                    <option value="Dr.">Dr.</option>                    
+                    <option value="Prof.">Prof.</option>                    
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="subject">Company</label>
+            </div>
+            <div class="col c50">
+                <input  id="company" maxlength="80" name="company" size="35" type="text" />
+            </div>
+        </div>  
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="00N20000007i3SD">Last name</label>
+            </div>
+            <div class="col c50">
+                <input id="00N20000007i3SD" maxlength="80" name="00N20000007i3SD" size="35" type="text"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="00N20000007i3SA">First Name</label>
+            </div>
+            <div class="col c50">
+                <input id="00N20000007i3SA" maxlength="80" name="00N20000007i3SA" size="35" type="text"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="00N20000007i3SG">Street Name</label>
+            </div>
+            <div class="col c50">
+                <input id="00N20000007i3SG" maxlength="255" name="00N20000007i3SG" size="2" type="text"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="00N20000007i3SF">Zip</label>
+            </div>
+            <div class="col c50">
+                <input id="00N20000007i3SF" maxlength="10" name="00N20000007i3SF" size="35" type="text"/>
+            </div>
+        </div>                                
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="00N20000007i3SE">City</label>
+            </div>
+            <div class="col c50">
+                <input id="00N20000007i3SE" maxlength="100" name="00N20000007i3SE" size="35" type="text"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="email">Email</label>
+            </div>
+            <div class="col c50">
+                <input id="email" maxlength="80" name="email" size="35" type="text" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="00N20000007i3S9">Facebook Id</label>
+            </div>
+            <div class="col c50">
+                <input id="00N20000007i3S9" maxlength="100" name="00N20000007i3S9" size="35" type="text" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="00N20000007i3SC">Home Phone</label>
+            </div>
+            <div class="col c50">
+                <input id="00N20000007i3SC" maxlength="20" name="00N20000007i3SC" size="35" type="text" />
+            </div>
+        </div>
+            <div class="row">
+            <div class="col c25 labels">
+                <label for="00N20000007i3SI">Mobile Phone</label>
+            </div>
+            <div class="col c50">
+                <input id="00N20000007i3SI" maxlength="20" name="00N20000007i3SI" size="35" type="text" />
+            </div>
+        </div>
+                <div class="row">
+            <div class="col c25 labels">
+                <label for="00N20000007i3SK">Office / Other Phone</label>
+            </div>
+            <div class="col c50">
+                <input id="00N20000007i3SK" maxlength="20" name="00N20000007i3SK" size="35" type="text" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="type">Case Type</label>
+            </div>
+            <div class="col c50">
+                <select  id="type" name="type">
+                        <option value="Inquiry">Inquiry</option>
+                        <option value="Quality Complaint">Quality Complaint *</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="00N20000002xLla">BBE Date (DD/MM/YYYY) *</label>
+            </div>
+            <div class="col c50">
+                <input id="00N20000002xLla" maxlength="80" name="00N20000002xLla" size="35" type="text" value="" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="00N20000002xLpM">Production Code *</label>
+            </div>
+            <div class="col c50">
+                <input id="00N20000002xLpM" maxlength="20" name="00N20000002xLpM" size="35" type="text" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="00N20000007i3S8">Beverage (Product)*</label>
+            </div>
+            <div class="col c50">
+                <select id="00N20000007i3S8" name="00N20000007i3S8">
+                    <option value=""></option>
+                    <option value="COCA-COLA">COCA-COLA</option>
+                    <option value="COCA-COLA LIGHT">COCA-COLA LIGHT</option>
+                    <option value="COCA-COLA BLAK">COCA-COLA BLAK</option>
+                    <option value="COCA-COLA ZERO">COCA-COLA ZERO</option>
+                    <option value="SPRITE">SPRITE</option>
+                    <option value="FANTA">FANTA</option>
+                    <option value="MINUTE MAID">MINUTE MAID</option>
+                    <option value="NESTEA">NESTEA</option>
+                    <option value="POWERADE">POWERADE</option>
+                    <option value="BOISSONS CHAUDES">BOISSONS CHAUDES</option>
+                    <option value="CHAUDFONTAINE">CHAUDFONTAINE</option>
+                    <option value="BURN">BURN</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="00N20000007i3SB">Format d'achat *</label>
+            </div>
+            <div class="col c50">
+                <input id="00N20000007i3SB" maxlength="100" name="00N20000007i3SB" size="35" type="text" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="00N20000002xS69">Date of Purchase (DD/MM/YYYY) *</label>
+            </div>
+            <div class="col c50">
+                <input id="00N20000002xS69" maxlength="50" name="00N20000002xS69" size="35" type="text" value="" />
+            </div>
+        </div>         
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="00N20000002xfgC">Place of Purchase *</label>
+            </div>
+            <div class="col c50">
+                <input id="00N20000002xfgC" maxlength="40" name="00N20000002xfgC" size="35" type="text" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="description">Description</label>
+            </div>
+            <div class="col c50">
+                <textarea name="description" cols="45" rows="6"></textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col c25 labels">
+                <label for="00Ng0000000koDi">Opt in?</label>
+            </div>
+            <div class="col c50">
+                <select  id="00N20000007i3SJ" name="00N20000007i3SJ">
+                    <option value="1">Opt In</option>
+                    <option value="0">Opt Out</option>                                        
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+            
+            </div>    
+            <div class="col" style="color: red">
+                * Field must be filled in if "Quality Complaint" is selected as Case Type.
+            </div>            
+        </div> 
+        <div class="row">
+            <div class="col">
+            
+            </div>    
+            <div class="col">
+                <input id="submit" type="submit" name="submit" value="Submit"/>
+            </div>            
+        </div> 
+        </form>
+    </div>
+   <div id="content1" class="table"> 
+    <div id="footer" class="table">
+       &copy; {!YEAR(TODAY())} {!$Organization.Name}
+    </div>
+</div>
+    </div>
+</apex:page>

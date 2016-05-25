@@ -1,0 +1,57 @@
+<apex:page standardController="User" extensions="HUB_UserPreferencesController">
+<apex:sectionHeader title="Alert Email Notification Settings"/>
+  <apex:form >
+   <apex:pageBlock id="PageBlock" mode="Edit">
+<apex:pageBlockSection columns="2">
+        <apex:inputField value="{!currentuser.HUB_Opt_Out__c}" label="All Alert Opt Out"/>
+        <apex:inputField value="{!currentuser.HUB_Receive_Creation_Alert_for_Cases__c}" label="Receive Case Creation Alert for Cases I Create"/>
+      </apex:pageBlockSection>
+      <apex:pageBlockSection columns="2" title=" " collapsible="false">
+          <apex:inputField value="{!currentuser.HUB_Receive_High_Level_fun_Case_Alerts__c}" label="Receive High Level Function Case Alerts"/>
+        <apex:inputField value="{!currentuser.HUB_Function__c}" label="My High Level Function" required="true"/>
+        
+        
+      </apex:pageBlockSection>
+      <apex:pageBlockSection columns="2" title=" " collapsible="false">
+      <apex:inputField value="{!currentuser.HUB_Receive_Relevant_Brand_Case_Alerts__c}" />
+      <apex:inputField value="{!currentuser.HUB_Relevant_Brands__c}" label="My Relevant Brands"/>
+      </apex:pageBlockSection>
+      <apex:pageBlockSection columns="2" title=" " collapsible="false">
+      <apex:inputField value="{!currentuser.HUB_Rcv_Weekly_Learning_Summary_mails__c}"/>
+      <apex:inputField value="{!currentuser.HUB_Receive_Content_Digest_Emails__c}"/>
+      </apex:pageBlockSection>
+      <apex:pageBlockSection columns="1" collapsible="false" title="Nexus Primary Market">
+          <apex:inputField value="{!currentuser.HUB_Region__c}" required="true"/>
+          <apex:inputField value="{!currentuser.HUB_Group__c}" required="true"/>
+          <apex:inputField value="{!currentuser.HUB_Country__c}" required="true"/>
+      </apex:pageBlockSection>
+
+      <apex:pageBlockSection columns="2" collapsible="false" title="Nexus Regional Digest Emails">
+          <apex:inputField value="{!currentuser.HUB_Frequency_APAC__c}"/>
+          <apex:inputField value="{!currentuser.HUB_Frequency_EAG__c}" />   
+          <apex:inputField value="{!currentuser.HUB_New_Case_APAC__c}"/>
+          <apex:inputField value="{!currentuser.HUB_New_Case_EAG__c}" />
+          <apex:pageBlockSectionItem /> <apex:pageBlockSectionItem /> 
+          <apex:inputField value="{!currentuser.HUB_Frequency_LAG__c}" />
+          <apex:inputField value="{!currentuser.HUB_Frequency_EG__c}" />
+          <apex:inputField value="{!currentuser.HUB_New_Case_LAG__c}" />
+          <apex:inputField value="{!currentuser.HUB_New_Case_EG__c}" />
+          <apex:pageBlockSectionItem /> <apex:pageBlockSectionItem />
+          <apex:inputField value="{!currentuser.HUB_Frequency_Global__c}"/>
+          <apex:inputField value="{!currentuser.HUB_Frequency_NA__c}" />
+          <apex:inputField value="{!currentuser.HUB_New_Case_Global__c}" />
+          <apex:inputField value="{!currentuser.HUB_New_Case_NA__c}" />
+      </apex:pageBlockSection>
+      <apex:pageBlockSection columns="3" collapsible="false" title="Nexus Additional Market Alerts">
+          <apex:inputField value="{!currentuser.HUB_MarketsObserved1__c}"/>
+          <apex:inputField value="{!currentuser.HUB_MarketsObserved2__c}"/>
+      </apex:pageBlockSection>
+      <apex:pageBlockButtons >
+        <apex:commandButton value="Save" action="{!savePreferences}"/>
+        <apex:commandButton value="Cancel" action="{!cancel}"/>
+      </apex:pageBlockButtons>
+      
+    </apex:pageBlock>
+  </apex:form>
+  
+</apex:page>

@@ -1,0 +1,76 @@
+<apex:page controller="Janrain.CaptureSettingsController">
+    <apex:sectionHeader title="Capture Settings" subtitle="Data Mapping"/>
+ 
+    <apex:form >
+      <apex:pageMessages id="error"/>
+      <apex:pageBlock title="Capture Settings">
+        <p>Enter your Capture application credentials and select an local object to get started.</p>
+          <apex:panelGrid columns="3" style="margin-top:1em;">
+            <apex:outputLabel value="Capture App Domain" for="potentialDomain" />
+            <apex:image id="domainhelp" value="{!$Resource.Janrain__questionmark}"
+                    width="15" height="15"
+                    title="Enter the domain of your Capture application here. (eg: my-app.janraincapture.com)" />
+            <apex:inputText size="40" required="true" id="potentialDomain" value="{!potentialDomain}" />
+            <apex:outputLabel value="Capture Client ID" for="clientId" />
+            <apex:image id="clientidhelp" value="{!$Resource.Janrain__questionmark}"
+                    title="Enter the Client ID of your Capture application here."
+                    width="15" height="15" />
+            <apex:inputText size="40" required="true" id="clientId" value="{!clientId}" />
+            <apex:outputLabel value="Capture Client Secret" for="clientSecret" />
+            <apex:image id="secrethelp" value="{!$Resource.Janrain__questionmark}"
+                    title="Enter the Client Secret of your Capture application here."
+                    width="15" height="15" />
+            <apex:inputText size="40" required="true" id="clientSecret" value="{!clientSecret}" />
+            <apex:outputLabel value="Capture Type Name" for="typeName" />
+            <apex:image id="typenamehelp" value="{!$Resource.Janrain__questionmark}"
+                    title="Enter the name of the type from your Capture Schema that you wish to map to Salesforce. (eg: user)"
+                    width="15" height="15" />
+            <apex:inputText size="40" required="true" id="typeName" value="{!typeName}" />
+
+            <!-- object type -->
+            <apex:outputLabel value="SFDC Object" for="sfObject" />
+            <apex:image id="objecttypehelp" value="{!$Resource.Janrain__questionmark}"
+                    title="Pick which object type you want to sync Capture entities as."
+                    width="15" height="15" />
+            <apex:selectList value="{!sfObject}" id="sfObject" size="1">
+                <apex:selectOptions value="{!sfObjects}"/>
+            </apex:selectList>
+
+            <apex:outputLabel value="Bucket Account" for="bucketAccount" />
+            <apex:image id="accounthelp" value="{!$Resource.Janrain__questionmark}"
+                    title="Choose the account that created {!sfObject} objects will be assigned to."
+                    width="15" height="15" />
+            <apex:inputField id="bucketAccount" value="{!contact.AccountId}" />
+          </apex:panelGrid>
+          <apex:commandButton action="{!captureSettings}" value="Submit" id="submit"/>
+        </apex:pageBlock>
+      </apex:form>
+      <apex:form rendered="{!captureValid}">
+        <apex:pageBlock title="Mapping Table">
+          <p>Select a local Salesforce field and a Capture attribute to add to the map. Overwrite existing rows by adding a new pair using the existing Salesforce field.</p>
+          <apex:pageBlockTable value="{!mappings}" var="mapping" columns="2">
+            <apex:column headerValue="{!sfObject} field" value="{!mappings[mapping].name}" />
+            <apex:column headerValue="Capture entity field" value="{!mappings[mapping].Value__c}" />
+          </apex:pageBlockTable>
+          <apex:panelGrid columns="3" style="margin-top:1em;">
+            <apex:selectList value="{!selectedSfField}" size="1">
+                <apex:selectOptions value="{!sfObjectFields}"/>
+            </apex:selectList>
+            <apex:selectList value="{!selectedField}" size="1">
+                <apex:selectOptions value="{!captureFields}"/>
+            </apex:selectList>
+            <apex:commandButton action="{!fieldMapping}" value="Add" id="submit"/>
+          </apex:panelGrid>
+        </apex:pageBlock>
+    </apex:form>
+    <apex:form rendered="{!captureValid}">
+      <apex:pageBlock title="Delete a Mapping">
+        <apex:panelGrid columns="2" style="margin-top:1em;">
+          <apex:selectList value="{!selectedSfField}" size="1">
+            <apex:selectOptions value="{!mappedSfFields}"/>
+          </apex:selectList>
+          <apex:commandButton action="{!deleteMapping}" value="Delete" id="submit"/>
+        </apex:panelGrid>
+      </apex:pageBlock>
+    </apex:form>
+</apex:page>

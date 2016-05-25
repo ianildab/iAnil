@@ -1,0 +1,16 @@
+<apex:page standardController="Case" extensions="HUB_TranslateCaseCls" sidebar="false" showHeader="false" showChat="false" action="{!translateNupdate}">
+    <style type="text/css">
+        .sqlDialogText {
+        display: block;
+        height: 60px;
+        overflow: auto;
+       }
+    </style>
+  
+    <apex:pageBlock mode="maindetail">
+        <apex:pageBlockSection columns="1">
+            <apex:outputField value="{!thisCase.Subject_Auto_Translate_EN__c}" /> 
+            <apex:outputText value="{!thisCase.Description_Auto_Translate_EN__c}" styleClass="sqlDialogText"></apex:outputText>
+        </apex:pageBlockSection>
+    </apex:pageBlock> 
+</apex:page>
